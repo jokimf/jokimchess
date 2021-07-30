@@ -1,7 +1,9 @@
-import java.util.Arrays;
+import Chessboard.Board;
+import Chessboard.FENHelper;
+import Chessboard.Move;
+import Enums.MoveType;
+
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class Main {
 

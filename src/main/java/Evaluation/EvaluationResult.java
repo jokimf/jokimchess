@@ -1,3 +1,7 @@
+package Evaluation;
+
+import Chessboard.Move;
+
 public class EvaluationResult {
     private Evaluation eval;
     private Move move;

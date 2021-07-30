@@ -1,3 +1,7 @@
+package Evaluation;
+
+import Enums.PieceColor;
+
 public class Evaluation implements Comparable<Evaluation> {
     private double eval;
     private PieceColor winner;

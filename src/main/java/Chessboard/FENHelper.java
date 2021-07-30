@@ -1,3 +1,7 @@
+package Chessboard;
+
+import Chessboard.Board;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,6 +18,7 @@ public class FENHelper {
         this.fen = fen;
     }
 
+    //TODO: PGN Method
     public Board fenToBoard() {
         Piece[][] board = new Piece[8][8];
         boolean[] castlingOptions = this.getCastlingOptions();
@@ -60,17 +65,17 @@ public class FENHelper {
     }
 
     public static String boardToFen(Board board) {
-        // Board part
+        // Chessboard.Board part
         String fen = "";
         for (int row = 0; row < 8; row++) {
             int countOfEmptySpaces = 0;
             for (int index = 0; index < 8; index++) {
-                // Gehe ganzes Board durch
+                // Gehe ganzes Chessboard.Board durch
                 // Wenn leer ist, zähle insgesamt freie Stellen
                 if (board.getBoard()[row][index] == null) {
                     countOfEmptySpaces++;
                 } else {
-                    // Piece hit
+                    // Chessboard.Piece hit
                     if (countOfEmptySpaces > 0) {
                         // Put number,
                         fen += countOfEmptySpaces;
@@ -110,7 +115,7 @@ public class FENHelper {
         int[] enPassantSquare = board.getEnPassantSquare();
         fen = enPassantSquare != null ? positionToString(board.getEnPassantSquare()[0], board.getEnPassantSquare()[1]) + " " : fen + "- ";
 
-        // Move counts
+        // Chessboard.Move counts
         fen += board.getHalfmove() + " " + board.getFullmove();
         return fen;
     }

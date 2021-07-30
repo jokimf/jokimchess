@@ -1,3 +1,7 @@
+package Chessboard;
+
+import Enums.MoveType;
+
 public class Move {
     private final int x, y, targetX, targetY;
     private final Piece pieceTaken, pieceMoved;
@@ -35,7 +39,7 @@ public class Move {
                 }
                 return FENHelper.positionToString(x, y) + FENHelper.positionToString(targetX, targetY) + "=Q";
             default:
-                throw new IllegalArgumentException("MoveType unbekannt: " + moveType);
+                throw new IllegalArgumentException("Enums.MoveType unbekannt: " + moveType);
         }
     }
 

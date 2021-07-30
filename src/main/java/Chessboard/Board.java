@@ -1,5 +1,13 @@
-import javax.swing.text.Position;
+package Chessboard;
+
+import Enums.GameState;
+import Enums.MoveType;
+import Enums.PieceColor;
+import Enums.PieceType;
+
 import java.util.*;
+
+import static Enums.MoveType.*;
 
 public class Board {
     public final Piece[][] board;
@@ -220,7 +228,7 @@ public class Board {
                 pieceMoved.setPosition(startX, startY);
                 break;
             default:
-                throw new IllegalArgumentException("Unknown MoveType: " + m.getMoveType().toString());
+                throw new IllegalArgumentException("Unknown Enums.MoveType: " + m.getMoveType().toString());
         }
 
         if (turnWhite) {
@@ -267,7 +275,7 @@ public class Board {
                             continue;
                         }
                     }
-                    moves.add(new Move(x, y, jump[0], jump[1], piece, targetPiece, MoveType.NORMAL));
+                    moves.add(new Move(x, y, jump[0], jump[1], piece, targetPiece, NORMAL));
                 }
                 break;
             case KING:
@@ -282,7 +290,7 @@ public class Board {
                             continue;
                         }
                     }
-                    moves.add(new Move(x, y, shuffle[0], shuffle[1], piece, targetPiece, MoveType.NORMAL));
+                    moves.add(new Move(x, y, shuffle[0], shuffle[1], piece, targetPiece, NORMAL));
                 }
 
                 // Castling
@@ -290,17 +298,17 @@ public class Board {
                 boolean canCastle = piece.canCastle();
                 if (canCastle && turnWhite) {
                     if (x == 7 && y == 4 && getPieceAt(7, 5) == null && getPieceAt(7, 6) == null && getPieceAt(7, 7).canCastle()) {
-                        moves.add(new Move(x, y, 7, 6, piece, null, MoveType.CASTLING_KINGSIDE_W));
+                        moves.add(new Move(x, y, 7, 6, piece, null, CASTLING_KINGSIDE_W));
                     }
                     if (x == 7 && y == 4 && getPieceAt(7, 1) == null && getPieceAt(7, 2) == null && getPieceAt(7, 3) == null) {
-                        moves.add(new Move(x, y, 7, 2, piece, null, MoveType.CASTLING_QUEENSIDE_W));
+                        moves.add(new Move(x, y, 7, 2, piece, null, CASTLING_QUEENSIDE_W));
                     }
                 } else if (canCastle && !turnWhite) {
                     if (x == 0 && y == 4 && getPieceAt(0, 5) == null && getPieceAt(0, 6) == null && getPieceAt(0, 7).canCastle()) {
-                        moves.add(new Move(x, y, 0, 6, piece, null, MoveType.CASTLING_KINGSIDE_B));
+                        moves.add(new Move(x, y, 0, 6, piece, null, CASTLING_KINGSIDE_B));
                     }
                     if (x == 0 && y == 4 && getPieceAt(0, 1) == null && getPieceAt(0, 2) == null && getPieceAt(0, 3) == null) {
-                        moves.add(new Move(x, y, 0, 2, piece, null, MoveType.CASTLING_QUEENSIDE_B));
+                        moves.add(new Move(x, y, 0, 2, piece, null, CASTLING_QUEENSIDE_B));
                     }
                 }
                 break;
@@ -309,56 +317,56 @@ public class Board {
                     // White
                     Piece inFront = getPieceAt(x - 1, y), inFrontLeft = getPieceAt(x - 1, y - 1), inFrontRight = getPieceAt(x - 1, y + 1);
                     if (inFront == null) {
-                        moves.add(new Move(x, y, x - 1, y, piece, null, x != 1 ? MoveType.NORMAL : MoveType.PROMOTION_W));
+                        moves.add(new Move(x, y, x - 1, y, piece, null, x != 1 ? NORMAL : PROMOTION_W));
 
                         // Zwei vor beim Start
                         if (x == 6 && getPieceAt(4, y) == null) {
-                            moves.add(new Move(x, y, x - 2, y, piece, null, MoveType.NORMAL));
+                            moves.add(new Move(x, y, x - 2, y, piece, null, NORMAL));
                         }
                     }
 
                     // Vorne links schlagen
                     if (inFrontLeft != null && inFrontLeft.getPieceColor() == PieceColor.BLACK) {
-                        moves.add(new Move(x, y, x - 1, y - 1, piece, inFrontLeft, x != 1 ? MoveType.NORMAL : MoveType.PROMOTION_W));
+                        moves.add(new Move(x, y, x - 1, y - 1, piece, inFrontLeft, x != 1 ? NORMAL : PROMOTION_W));
                     }
                     if (Arrays.equals(new int[]{x - 1, y - 1}, enPassantSquare)) {
-                        moves.add(new Move(x, y, x - 1, y - 1, piece, getPieceAt(x, y - 1), MoveType.ENPASSANT_W));
+                        moves.add(new Move(x, y, x - 1, y - 1, piece, getPieceAt(x, y - 1), ENPASSANT_W));
                     }
 
                     // Vorne rechts schlagen
                     if (inFrontRight != null && inFrontRight.getPieceColor() == PieceColor.BLACK) {
-                        moves.add(new Move(x, y, x - 1, y + 1, piece, inFrontRight, x != 1 ? MoveType.NORMAL : MoveType.PROMOTION_W));
+                        moves.add(new Move(x, y, x - 1, y + 1, piece, inFrontRight, x != 1 ? NORMAL : PROMOTION_W));
                     }
                     if (Arrays.equals(new int[]{x - 1, y + 1}, enPassantSquare)) {
-                        moves.add(new Move(x, y, x - 1, y + 1, piece, getPieceAt(x, y + 1), MoveType.ENPASSANT_W));
+                        moves.add(new Move(x, y, x - 1, y + 1, piece, getPieceAt(x, y + 1), ENPASSANT_W));
                     }
 
                 } else {
                     // Black
                     Piece inFront = getPieceAt(x + 1, y), inFrontLeft = getPieceAt(x + 1, y - 1), inFrontRight = getPieceAt(x + 1, y + 1);
                     if (inFront == null) {
-                        moves.add(new Move(x, y, x + 1, y, piece, null, x != 6 ? MoveType.NORMAL : MoveType.PROMOTION_B));
+                        moves.add(new Move(x, y, x + 1, y, piece, null, x != 6 ? NORMAL : PROMOTION_B));
 
                         // Zwei vor beim Start
                         if (x == 1 && getPieceAt(3, y) == null) {
-                            moves.add(new Move(x, y, x + 2, y, piece, null, MoveType.NORMAL));
+                            moves.add(new Move(x, y, x + 2, y, piece, null, NORMAL));
                         }
                     }
 
                     // Vorne links schlagen
                     if (inFrontLeft != null && inFrontLeft.getPieceColor() == PieceColor.WHITE) {
-                        moves.add(new Move(x, y, x + 1, y - 1, piece, inFrontLeft, x != 6 ? MoveType.NORMAL : MoveType.PROMOTION_B));
+                        moves.add(new Move(x, y, x + 1, y - 1, piece, inFrontLeft, x != 6 ? NORMAL : PROMOTION_B));
                     }
                     if (Arrays.equals(enPassantSquare, new int[]{x + 1, y - 1})) {
-                        moves.add(new Move(x, y, x + 1, y - 1, piece, getPieceAt(x, y - 1), MoveType.ENPASSANT_B));
+                        moves.add(new Move(x, y, x + 1, y - 1, piece, getPieceAt(x, y - 1), ENPASSANT_B));
                     }
 
                     // Vorne rechts schlagen
                     if (inFrontRight != null && inFrontRight.getPieceColor() == PieceColor.WHITE) {
-                        moves.add(new Move(x, y, x + 1, y + 1, piece, inFrontRight, x != 6 ? MoveType.NORMAL : MoveType.PROMOTION_B));
+                        moves.add(new Move(x, y, x + 1, y + 1, piece, inFrontRight, x != 6 ? NORMAL : PROMOTION_B));
                     }
                     if (Arrays.equals(new int[]{x + 1, y + 1}, enPassantSquare)) {
-                        moves.add(new Move(x, y, x + 1, y + 1, piece, getPieceAt(x, y + 1), MoveType.ENPASSANT_B));
+                        moves.add(new Move(x, y, x + 1, y + 1, piece, getPieceAt(x, y + 1), ENPASSANT_B));
                     }
                 }
                 break;
@@ -438,18 +446,18 @@ public class Board {
                 Piece pieceOnNewPos = getPieceAt(newPos[0], newPos[1]);
                 if (pieceOnNewPos != null) {
                     PieceColor pieceColorOnNewPos = pieceOnNewPos.getPieceColor();
-                    // Move trifft auf ein Piece der gleichen Farbe
+                    // Chessboard.Move trifft auf ein Chessboard.Piece der gleichen Farbe
                     if (turnWhite && pieceColorOnNewPos == PieceColor.WHITE || !turnWhite && pieceColorOnNewPos == PieceColor.BLACK) {
                         break;
                     }
-                    // Move trifft auf ein Piece der anderen Farbe
+                    // Chessboard.Move trifft auf ein Chessboard.Piece der anderen Farbe
                     if (turnWhite && pieceColorOnNewPos == PieceColor.BLACK || !turnWhite && pieceColorOnNewPos == PieceColor.WHITE) {
-                        moves.add(new Move(x, y, x + directions[dir][0] * movelength, y + directions[dir][1] * movelength, piece, pieceOnNewPos, MoveType.NORMAL));
+                        moves.add(new Move(x, y, x + directions[dir][0] * movelength, y + directions[dir][1] * movelength, piece, pieceOnNewPos, NORMAL));
                         break;
                     }
                 }
-                // Move trifft auf nichts
-                moves.add(new Move(x, y, x + directions[dir][0] * movelength, y + directions[dir][1] * movelength, piece, null, MoveType.NORMAL));
+                // Chessboard.Move trifft auf nichts
+                moves.add(new Move(x, y, x + directions[dir][0] * movelength, y + directions[dir][1] * movelength, piece, null, NORMAL));
             }
         }
     }

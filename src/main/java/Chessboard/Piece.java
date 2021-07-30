@@ -1,3 +1,8 @@
+package Chessboard;
+
+import Enums.PieceColor;
+import Enums.PieceType;
+
 public class Piece {
     private final PieceType pieceType;
     private final PieceColor pieceColor;
@@ -37,7 +42,7 @@ public class Piece {
                 this.pieceType = PieceType.KNIGHT;
                 break;
             default:
-                throw new IllegalArgumentException("Unknown Piece, tried to create with: " + pieceCharacter);
+                throw new IllegalArgumentException("Unknown Chessboard.Piece, tried to create with: " + pieceCharacter);
         }
     }
 
@@ -60,7 +65,7 @@ public class Piece {
             case PAWN:
                 return pieceColor == PieceColor.WHITE ? "P" : "p";
             default:
-                throw new IllegalArgumentException("Illegal Piece: " + getPieceType());
+                throw new IllegalArgumentException("Illegal Chessboard.Piece: " + getPieceType());
         }
     }
 

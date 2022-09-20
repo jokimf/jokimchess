@@ -2,14 +2,20 @@ import Chessboard.Board;
 import Chessboard.FENHelper;
 import Chessboard.Move;
 import Enums.MoveType;
+import Evaluation.EvaluationResult;
+import Evaluation.Evaluator;
 
 import java.util.HashMap;
 
 public class Main {
 
     public static void main(String[] args) {
-        FENHelper f = new FENHelper();
-        Board b = f.fenToBoard();
+        FENHelper f5 = new FENHelper();
+        Board b5 = f5.fenToBoard();
+        Evaluator e = new Evaluator();
+        EvaluationResult result = e.minimax(b5, 2, true);
+        System.out.println(result.getMove().toString());
+        System.out.println(result.getEval());
     }
 
     public void testMoveCount() {
@@ -36,5 +42,30 @@ public class Main {
 
         System.out.println(moveCount);
         System.out.println(map.toString());
+    }
+
+    public void play50RandomMoves() {
+        FENHelper f = new FENHelper();
+        Board b = f.fenToBoard();
+        for (int i = 0; i < 50; i++) {
+            Move m = b.getRandomMove();
+            System.out.println(m.toString() + " " + m.getMoveType() + " " + m.getPieceMoved().toString() + " " + m.getPieceTaken());
+            b.playMove(m);
+        }
+        System.out.println(FENHelper.boardToFen(b));
+    }
+
+    public void kingCheckCheck() {
+        FENHelper f5 = new FENHelper("rnbqkbnr/2pppppp/5N2/8/pp1P4/8/PPP1PPPP/RNBQKB1R b KQkq - 1 5");
+        Board b5 = f5.fenToBoard();
+        System.out.println(b5.toString());
+        System.out.println(b5.isKingInCheck());
+    }
+
+    public void fixKingCastleOutOfDanger() {
+        FENHelper f5 = new FENHelper("rnbQk2r/3p1pp1/2p1p2p/3Pn3/p7/R6P/1PP1PPP1/1N2KB1R b Kkq - 0 13");
+        Board b5 = f5.fenToBoard();
+        System.out.println(b5.toString());
+        System.out.println(b5.allPossibleMoves(true));
     }
 }

@@ -46,9 +46,9 @@ public class Evaluation implements Comparable<Evaluation> {
     }
 
     @Override
-    public int compareTo(Evaluation o) {
+    public int compareTo(Evaluation otherEval) {
         if (winner == PieceColor.WHITE) {
-            if (o.winner == PieceColor.WHITE) {
+            if (otherEval.winner == PieceColor.WHITE) {
                 return 0;
             } else {
                 return 1;
@@ -56,48 +56,48 @@ public class Evaluation implements Comparable<Evaluation> {
         }
 
         if (winner == PieceColor.BLACK) {
-            if (o.winner == PieceColor.BLACK) {
+            if (otherEval.winner == PieceColor.BLACK) {
                 return 0;
             } else {
                 return -1;
             }
         }
 
-        if (o.winner == PieceColor.WHITE) {
+        if (otherEval.winner == PieceColor.WHITE) {
             return -1;
         }
-        if (o.winner == PieceColor.BLACK) {
+        if (otherEval.winner == PieceColor.BLACK) {
             return 1;
         }
 
-        if (mateIn == 0 && o.mateIn == 0) {
-            return Double.compare(eval, o.eval);
+        if (mateIn == 0 && otherEval.mateIn == 0) {
+            return Double.compare(eval, otherEval.eval);
         }
-        if (mateIn > 0 && o.mateIn > 0) {
-            if (mateIn > o.mateIn) {
+        if (mateIn > 0 && otherEval.mateIn > 0) {
+            if (mateIn > otherEval.mateIn) {
                 return -1;
             }
-            if (mateIn < o.mateIn) {
+            if (mateIn < otherEval.mateIn) {
                 return 1;
             }
-            if (mateIn == o.mateIn) {
+            if (mateIn == otherEval.mateIn) {
                 return 0;
             }
         }
 
-        if (mateIn < 0 && o.mateIn < 0) {
-            if (mateIn > o.mateIn) {
+        if (mateIn < 0 && otherEval.mateIn < 0) {
+            if (mateIn > otherEval.mateIn) {
                 return 1;
             }
-            if (mateIn < o.mateIn) {
+            if (mateIn < otherEval.mateIn) {
                 return -1;
             }
-            if (mateIn == o.mateIn) {
+            if (mateIn == otherEval.mateIn) {
                 return 0;
             }
         }
 
-        return Integer.compare(mateIn, o.mateIn);
+        return Integer.compare(mateIn, otherEval.mateIn);
     }
 
     public double getEval() {

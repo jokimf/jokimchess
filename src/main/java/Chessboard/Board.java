@@ -6,6 +6,7 @@ import Enums.PieceColor;
 import Enums.PieceType;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static Enums.MoveType.*;
 
@@ -36,11 +37,16 @@ public class Board {
         int targetX = m.getTargetPos()[0], targetY = m.getTargetPos()[1], startX = m.getPos()[0], startY = m.getPos()[1];
         boolean pieceIsWhite = p.getPieceColor() == PieceColor.WHITE;
         // TODO: Add JUMPSTART movetype to set enPassantSquare
+        // TODO: King loses castling rights on move
+        // TODO: allPiecesOnTheBoard refresh on capture
         switch (m.getMoveType()) {
             case NORMAL:
                 board[targetX][targetY] = p;
                 board[startX][startY] = null;
                 p.setPosition(targetX, targetY);
+                if (m.getPieceTaken() != null) {
+                    piecesOnTheBoard.remove(m.getPieceTaken());
+                }
                 break;
             case ENPASSANT_W:
                 p.setPosition(targetX, targetY);
@@ -119,40 +125,23 @@ public class Board {
             fullmove++;
         }
         if (p.getPieceType() == PieceType.PAWN || m.getPieceTaken() != null) {
+            halfmovesBeforeUndo = halfmove;
             halfmove = -1;
         }
         halfmove++;
-        halfmovesBeforeUndo = halfmove;
+        halfmovesBeforeUndo = 0;
         this.turnWhite = !turnWhite;
     }
 
     public List<Move> allPossibleMoves(boolean checkTest) {
-        List<Move> allMoves = new ArrayList<>();
-        for (Piece p : piecesOnTheBoard) {
-            if (turnWhite && p.getPieceColor() == PieceColor.WHITE) {
-                for (Move a : availableMovesForPiece(p, checkTest)) {
-                    allMoves.add(a);
-                }
-            } else if (!turnWhite && p.getPieceColor() == PieceColor.BLACK) {
-                for (Move a : availableMovesForPiece(p, checkTest)) {
-                    allMoves.add(a);
-                }
-            }
-        }
-        return allMoves;
-    }
+        PieceColor activeColor = turnWhite ? PieceColor.WHITE : PieceColor.BLACK;
+        List<Move> moves = new ArrayList<>();
+        List<Piece> filtered = piecesOnTheBoard.stream().filter(p -> p.getPieceColor() == activeColor).collect(Collectors.toList());
 
-    public Move getRandomMove() {
-        Random r = new Random();
-        List<Move> allPossibleMoves = allPossibleMoves(true);
-        int numberOfMoves = allPossibleMoves.size();
-        if (numberOfMoves == 0) {
-            System.out.println("No possible moves left!");
-            System.exit(0);
-        } else if (numberOfMoves == 1) {
-            return allPossibleMoves(true).get(0);
+        for (Piece p : filtered) {
+            moves.addAll(availableMovesForPiece(p, checkTest));
         }
-        return allPossibleMoves(true).get(r.nextInt(numberOfMoves - 1));
+        return moves;
     }
 
 
@@ -167,6 +156,7 @@ public class Board {
                 board[startX][startY] = pieceMoved;
                 if (pieceTaken != null) {
                     pieceTaken.setPosition(targetX, targetY);
+                    piecesOnTheBoard.add(pieceTaken);
                 }
                 pieceMoved.setPosition(startX, startY);
 
@@ -228,13 +218,13 @@ public class Board {
                 pieceMoved.setPosition(startX, startY);
                 break;
             default:
-                throw new IllegalArgumentException("Unknown Enums.MoveType: " + m.getMoveType().toString());
+                throw new IllegalArgumentException("Unknown MoveType: " + m.getMoveType().toString());
         }
 
         if (turnWhite) {
             fullmove--;
         }
-        halfmove = halfmovesBeforeUndo;
+        halfmove = halfmovesBeforeUndo > 0 ? halfmovesBeforeUndo : halfmove - 1;
         this.turnWhite = !turnWhite;
     }
 
@@ -286,7 +276,7 @@ public class Board {
                     Piece targetPiece = getPieceAt(shuffle[0], shuffle[1]);
                     if (targetPiece != null) {
                         PieceColor targetPieceColor = targetPiece.getPieceColor();
-                        if (turnWhite && targetPieceColor == PieceColor.WHITE || turnWhite == false && targetPieceColor == PieceColor.BLACK) {
+                        if (turnWhite && targetPieceColor == PieceColor.WHITE || !turnWhite && targetPieceColor == PieceColor.BLACK) {
                             continue;
                         }
                     }
@@ -297,17 +287,17 @@ public class Board {
                 // TODO: Hier fehlt noch, dass der King eventuell im Schach steht
                 boolean canCastle = piece.canCastle();
                 if (canCastle && turnWhite) {
-                    if (x == 7 && y == 4 && getPieceAt(7, 5) == null && getPieceAt(7, 6) == null && getPieceAt(7, 7).canCastle()) {
+                    if (x == 7 && y == 4 && getPieceAt(7, 5) == null && getPieceAt(7, 6) == null && getPieceAt(7, 7) != null && getPieceAt(7, 7).canCastle()) {
                         moves.add(new Move(x, y, 7, 6, piece, null, CASTLING_KINGSIDE_W));
                     }
-                    if (x == 7 && y == 4 && getPieceAt(7, 1) == null && getPieceAt(7, 2) == null && getPieceAt(7, 3) == null) {
+                    if (x == 7 && y == 4 && getPieceAt(7, 1) == null && getPieceAt(7, 2) == null && getPieceAt(7, 3) == null && getPieceAt(7, 0) != null && getPieceAt(7, 0).canCastle()) {
                         moves.add(new Move(x, y, 7, 2, piece, null, CASTLING_QUEENSIDE_W));
                     }
                 } else if (canCastle && !turnWhite) {
-                    if (x == 0 && y == 4 && getPieceAt(0, 5) == null && getPieceAt(0, 6) == null && getPieceAt(0, 7).canCastle()) {
+                    if (x == 0 && y == 4 && getPieceAt(0, 5) == null && getPieceAt(0, 6) == null && getPieceAt(0, 7) != null && getPieceAt(0, 7).canCastle()) {
                         moves.add(new Move(x, y, 0, 6, piece, null, CASTLING_KINGSIDE_B));
                     }
-                    if (x == 0 && y == 4 && getPieceAt(0, 1) == null && getPieceAt(0, 2) == null && getPieceAt(0, 3) == null) {
+                    if (x == 0 && y == 4 && getPieceAt(0, 1) == null && getPieceAt(0, 2) == null && getPieceAt(0, 3) == null && getPieceAt(0, 0) != null && getPieceAt(0, 0).canCastle()) {
                         moves.add(new Move(x, y, 0, 2, piece, null, CASTLING_QUEENSIDE_B));
                     }
                 }
@@ -388,6 +378,7 @@ public class Board {
 
         if (checkTest) {
             //TODO: Use iterators instead of copying lists
+            //TODO: Check detection is kinda broken
             List<Move> iterMoves = new ArrayList<>(moves);
             for (Move m : iterMoves) {
                 playMove(m);
@@ -400,12 +391,13 @@ public class Board {
         return moves;
     }
 
-    private boolean isKingInCheck() {
-        List<Move> allEnemyMoves = new ArrayList<>(allPossibleMoves(false));
+    public boolean isKingInCheck() {
         //TODO: Use iterators instead of copying lists
+
+        List<Move> allEnemyMoves = allPossibleMoves(false);
         for (Move enemyMove : allEnemyMoves) {
-            Piece pieceTypeCaptured = enemyMove.getPieceTaken();
-            if (pieceTypeCaptured != null && pieceTypeCaptured.getPieceType() == PieceType.KING) {
+            Piece pieceCaptured = enemyMove.getPieceTaken();
+            if (pieceCaptured != null && pieceCaptured.getPieceType() == PieceType.KING) {
                 return true;
             }
         }
@@ -460,6 +452,19 @@ public class Board {
                 moves.add(new Move(x, y, x + directions[dir][0] * movelength, y + directions[dir][1] * movelength, piece, null, NORMAL));
             }
         }
+    }
+
+    public Move getRandomMove() {
+        Random r = new Random();
+        List<Move> allPossibleMoves = allPossibleMoves(true);
+        int numberOfMoves = allPossibleMoves.size();
+        if (numberOfMoves == 0) {
+            System.out.println("No possible moves left!");
+            System.exit(0);
+        } else if (numberOfMoves == 1) {
+            return allPossibleMoves(true).get(0);
+        }
+        return allPossibleMoves.get(r.nextInt(numberOfMoves - 1));
     }
 
     public String toString() {

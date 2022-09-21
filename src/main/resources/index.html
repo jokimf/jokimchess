@@ -4,9 +4,15 @@
 	<meta charset="UTF-8">
 	<title>Chess</title>
 </head>
-<body onload="draw()">
+<body onload="drawBoard()">
 <div class="content">
-	<div>Important information</div>
+	<div>
+		<button type="button" onclick="drawPieces()">Standard game</button>
+		<label for="fen">OR ENTER FEN</label>
+		<br>
+		<input id="fen" name="fen">
+		<button onclick="drawPieces()">Start</button>
+	</div>
 	<canvas id="board"></canvas>
 	<div>Test text</div>
 </div>
@@ -15,10 +21,54 @@
     const canvas = document.getElementById('board');
     const ctx = canvas.getContext('2d');
 
+    const standardfen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const size = 800;
     const tileSize = size / 8;
 
-    function draw() {
+    function drawPieces() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawBoard();
+        let fen = document.getElementById("fen").value;
+        if (fen === undefined || fen === "") {
+            fen = standardfen;
+        }
+
+        let lookup = {
+            "r": "bR.png",
+            "n": "bN.png",
+            "b": "bB.png",
+            "q": "bQ.png",
+            "k": "bK.png",
+            "p": "bP.png",
+            "R": "wR.png",
+            "N": "wN.png",
+            "B": "wB.png",
+            "Q": "wQ.png",
+            "K": "wK.png",
+            "P": "wP.png"
+        };
+        let splitfen = fen.split(" ")[0].split("/"); // 2r1r1k1/5p1p/p2q1p2/3p1b2/1R2p3/2P1Q3/PP2PPPP/2K2B1R b - - 0 19
+
+        for (let rowIndex = 0; rowIndex < splitfen.length; rowIndex++) {
+            let colIndex = 0;
+            for (let charIndex = 0; charIndex < splitfen[rowIndex].length; charIndex++) {
+                let char = splitfen[rowIndex].charAt(charIndex);
+                if (lookup.hasOwnProperty(char)) {
+                    let column = colIndex, row = rowIndex;
+                    let img = new Image();
+                    img.src = lookup[char];
+                    img.onload = function () {
+                        ctx.drawImage(img, column * tileSize + tileSize / 21, row * tileSize + tileSize * 0.075, tileSize * 0.9, tileSize * 0.85);
+                    }
+                    colIndex++;
+                } else {
+                    colIndex += parseInt(char);
+                }
+            }
+        }
+    }
+
+    function drawBoard() {
         canvas.height = size;
         canvas.width = size;
         ctx.fillStyle = "rgb(155,166,201)"
@@ -28,15 +78,6 @@
             for (let j = 0; j <= 4; j++) {
                 ctx.fillRect(j * tileSize * 2, i * tileSize * 2 + tileSize, tileSize, tileSize);
                 ctx.fillRect(j * tileSize * 2 + tileSize, i * tileSize * 2, tileSize, tileSize);
-            }
-        }
-
-        let lookup = ["bR.png", "bN.png", "bB.png", "bQ.png", "bK.png", "bB.png", "bN.png", "bR.png"];
-        for (let i = 0; i <= 8; i++) {
-            let img = new Image();
-            img.src = lookup[i];
-            img.onload = function () {
-                ctx.drawImage(img, i * tileSize + tileSize / 21, 0 + tileSize * 0.075, tileSize * 0.9, tileSize * 0.85);
             }
         }
     }

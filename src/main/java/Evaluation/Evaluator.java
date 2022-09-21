@@ -1,12 +1,19 @@
 package Evaluation;
 
 import Chessboard.Board;
+import Chessboard.Move;
 import Chessboard.Piece;
 import Enums.GameState;
 import Enums.PieceColor;
 
 public class Evaluator {
-    public double evaluate(Board b) {
+
+    public Move determineBestMove(Board b) {
+        EvaluationResult e = minimax(b, 3, b.isTurnWhite());
+        return e.getMove();
+    }
+
+    public double evaluate_single_board(Board b) {
         double sum = 0;
         int fullmoves = b.getFullmove();
         for (Piece p : b.getPiecesOnTheBoard()) {
@@ -72,7 +79,7 @@ public class Evaluator {
 
         // Recursion Base Case
         if (depth == 0) {
-            return new EvaluationResult(new Evaluation(evaluate(b)), null);
+            return new EvaluationResult(new Evaluation(evaluate_single_board(b)), null);
         }
 
         if (isMax) {

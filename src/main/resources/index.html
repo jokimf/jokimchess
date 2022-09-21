@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Chess</title>
+</head>
+<body onload="draw()">
+<div class="content">
+	<div>Important information</div>
+	<canvas id="board"></canvas>
+	<div>Test text</div>
+</div>
+</body>
+<script>
+    const canvas = document.getElementById('board');
+    const ctx = canvas.getContext('2d');
+
+    const size = 800;
+    const tileSize = size / 8;
+
+    function draw() {
+        canvas.height = size;
+        canvas.width = size;
+        ctx.fillStyle = "rgb(155,166,201)"
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgb(35,38,48)"
+        for (let i = 0; i <= 4; i++) {
+            for (let j = 0; j <= 4; j++) {
+                ctx.fillRect(j * tileSize * 2, i * tileSize * 2 + tileSize, tileSize, tileSize);
+                ctx.fillRect(j * tileSize * 2 + tileSize, i * tileSize * 2, tileSize, tileSize);
+            }
+        }
+
+        let lookup = ["bR.png", "bN.png", "bB.png", "bQ.png", "bK.png", "bB.png", "bN.png", "bR.png"];
+        for (let i = 0; i <= 8; i++) {
+            let img = new Image();
+            img.src = lookup[i];
+            img.onload = function () {
+                ctx.drawImage(img, i * tileSize + tileSize / 21, 0 + tileSize * 0.075, tileSize * 0.9, tileSize * 0.85);
+            }
+        }
+    }
+</script>
+<style>
+    canvas {
+        border: 1px solid black;
+    }
+
+    .content {
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+    }
+</style>
+</html>

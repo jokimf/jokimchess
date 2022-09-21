@@ -1,22 +1,31 @@
+package Main;
+
 import Chessboard.Board;
 import Chessboard.FENHelper;
 import Chessboard.Move;
 import Enums.MoveType;
-import Evaluation.EvaluationResult;
 import Evaluation.Evaluator;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public class Main {
 
-    public static void main(String[] args) {
-        FENHelper f5 = new FENHelper();
-        Board b5 = f5.fenToBoard();
-        Evaluator e = new Evaluator();
-        EvaluationResult result = e.minimax(b5, 2, true);
-        System.out.println(result.getMove().toString());
-        System.out.println(result.getEval());
+    public static void main(String[] args) throws IOException {
+        new ChessAPI().startBackend();
+//        FENHelper f5 = new FENHelper();
+//        Board b5 = f5.fenToBoard();
+//        Evaluator e = new Evaluator();
+//        EvaluationResult result = e.minimax(b5, 2, true);
+//        System.out.println(result.getMove().toString());
+//        System.out.println(result.getEval());
     }
+
 
     public void testMoveCount() {
         FENHelper f = new FENHelper();

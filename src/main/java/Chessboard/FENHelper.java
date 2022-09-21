@@ -1,7 +1,5 @@
 package Chessboard;
 
-import Chessboard.Board;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -125,13 +123,11 @@ public class FENHelper {
     }
 
     private int getFullmoveCount() {
-        String[] xd = fen.split(" ");
-        return Integer.parseInt(xd[5]);
+        return Integer.parseInt(fen.split(" ")[5]);
     }
 
     private int getHalfmoveCount() {
-        String[] xd = fen.split(" ");
-        return Integer.parseInt(xd[4]);
+        return Integer.parseInt(fen.split(" ")[4]);
     }
 
     private int[] getEnPassantSquare() {
@@ -161,10 +157,6 @@ public class FENHelper {
     }
 
     private boolean isWhitesTurn() {
-        String[] xd = fen.split(" ");
-        if (xd[1].equals("w")) {
-            return true;
-        }
-        return false;
+        return fen.split(" ")[1].equals("w");
     }
 }

@@ -1,7 +1,6 @@
 package Chessboard;
 
 import Enums.GameState;
-import Enums.MoveType;
 import Enums.PieceColor;
 import Enums.PieceType;
 
@@ -460,7 +459,6 @@ public class Board {
         int numberOfMoves = allPossibleMoves.size();
         if (numberOfMoves == 0) {
             System.out.println("No possible moves left!");
-            System.exit(0);
         } else if (numberOfMoves == 1) {
             return allPossibleMoves(true).get(0);
         }

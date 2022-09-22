@@ -17,7 +17,7 @@ public class FENHelper {
     }
 
     //TODO: PGN Method
-    public Board fenToBoard() {
+    public Board toBoard() {
         Piece[][] board = new Piece[8][8];
         boolean[] castlingOptions = this.getCastlingOptions();
         int index = 0;
@@ -62,7 +62,7 @@ public class FENHelper {
         return new Board(board, isWhitesTurn(), getCastlingOptions(), getEnPassantSquare(), getHalfmoveCount(), getFullmoveCount(), piecesOnTheBoard);
     }
 
-    public static String boardToFen(Board board) {
+    public String boardToFen(Board board) {
         // Chessboard.Board part
         String fen = "";
         for (int row = 0; row < 8; row++) {

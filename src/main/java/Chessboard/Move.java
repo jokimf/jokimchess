@@ -17,6 +17,21 @@ public class Move {
         this.moveType = moveType;
     }
 
+    public Move(String notation) {
+        // Make it better..
+        this.x = (int) notation.charAt(0) - 97;
+        this.y = 8 - ((int) notation.charAt(1) - 48);
+        this.targetX = (int) notation.charAt(2) - 97;
+        this.targetY = 8 - ((int) notation.charAt(3) - 48);
+        this.pieceTaken = null;
+        this.pieceMoved = new Piece(x, y, 'Q', false);
+        this.moveType = MoveType.NORMAL;
+    }
+
+    public String simpleToString() {
+        return FENHelper.positionToString(x, y) + FENHelper.positionToString(targetX, targetY);
+    }
+
     public String toString() {
         switch (moveType) {
             case CASTLING_KINGSIDE_B, CASTLING_KINGSIDE_W:

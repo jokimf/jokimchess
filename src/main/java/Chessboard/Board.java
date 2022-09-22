@@ -48,7 +48,7 @@ public class Board {
                 }
                 break;
             case ENPASSANT_W:
-                p.setPosition(targetX, targetY);
+                                                         p.setPosition(targetX, targetY);
                 piecesOnTheBoard.remove(getPieceAt(m.getTargetPos()[0] + 1, m.getTargetPos()[1]));
                 board[targetX][targetY] = p;
                 board[startX][startY] = null;

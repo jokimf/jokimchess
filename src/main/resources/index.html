@@ -19,7 +19,15 @@
     const standardfen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const size = 800;
     const tileSize = size / 8;
+    let xStart, yStart, xEnd, yEnd;
+    let playerTurn = true;
+    let fen = "";
+    let legalMoves;
 
+    // load fen
+    // send backend fen, response sends available moves
+    // save available moves, if player does move, look if its in avaliabl moves
+    // if succssful, send new move to backend
     let stage = new Konva.Stage({
         container: 'stage',
         width: size,
@@ -37,7 +45,8 @@
 
     function drawPieces() {
         piecesLayer.destroyChildren();
-        let fen = document.getElementById("fen").value;
+        fen = document.getElementById("fen").value;
+        legalMoves = fetchMoves();
         if (fen === undefined || fen === "") {
             fen = standardfen;
         }
@@ -89,8 +98,8 @@
         piece.on('dragstart', function () {
             // Find out starting square
             let position = stage.getPointerPosition();
-            let xStart = Math.floor(position.x / tileSize);
-            let yStart = Math.floor(position.y / tileSize);
+            xStart = Math.floor(position.x / tileSize);
+            yStart = Math.floor(position.y / tileSize);
         });
         piece.on('dragmove', function () {
             // Snap piece to mouse
@@ -100,20 +109,52 @@
         });
         piece.on('dragend', function () {
             let position = stage.getPointerPosition();
-            let xEnd = Math.floor(position.x / tileSize);
-            let yEnd = Math.floor(position.y / tileSize);
+            xEnd = Math.floor(position.x / tileSize);
+            yEnd = Math.floor(position.y / tileSize);
 
-            // TODO: Figure out move, check if valid -> java?
-            // Check if it's players turn
-            // If it's a capture, remove piece at that position
+            let moveString = simpleToString(xStart, yStart, xEnd, yEnd);
+            console.log(moveString);
 
-            // Snap to new position if move valid
-            let snapX = Math.round(piece.attrs.x / tileSize);
-            let snapY = Math.round(piece.attrs.y / tileSize);
-            piece.setAttr("x", snapX * tileSize);
-            piece.setAttr("y", snapY * tileSize);
+            // Move valid?
+            legalMoves.then(moves => {
+                console.log(moves);
+                if (playerTurn && moves.includes(moveString)) {
+                    // Snap to new position if move valid
+                    let snapX = Math.round(piece.attrs.x / tileSize);
+                    let snapY = Math.round(piece.attrs.y / tileSize);
+                    piece.setAttr("x", snapX * tileSize);
+                    piece.setAttr("y", snapY * tileSize);
+                    playerTurn = !playerTurn;
+
+                    fen = updateFen(moveString);
+                    // If it's a capture, remove piece at that position
+                } else {
+                    // Snap to original position
+                    piece.setAttr("x", xStart * tileSize);
+                    piece.setAttr("y", yStart * tileSize);
+                }
+            })
+
         });
         piecesLayer.add(piece);
+    }
+
+    function updateFen(moveString) {
+        //const response = await fetch("http://localhost:7001/chess/newFen?" + new URLSearchParams({
+        //    fen: fen,
+        //    move: moveString
+        //}));
+
+    }
+
+    async function fetchMoves() { // Returns promise
+        const response = await fetch("http://localhost:7001/chess/availableMoves?" + new URLSearchParams({fen: fen}));
+        const json = await response.json();
+        return json;
+    }
+
+    function simpleToString() {
+        return String.fromCharCode("a".charCodeAt(0) + xStart) + (8 - yStart) + String.fromCharCode("a".charCodeAt(0) + xEnd) + (8 - yEnd)
     }
 
     function drawBackground() {

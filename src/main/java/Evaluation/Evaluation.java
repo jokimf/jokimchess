@@ -1,6 +1,7 @@
 package Evaluation;
 
 import Enums.PieceColor;
+import org.jetbrains.annotations.NotNull;
 
 public class Evaluation implements Comparable<Evaluation> {
     private double eval;
@@ -46,7 +47,7 @@ public class Evaluation implements Comparable<Evaluation> {
     }
 
     @Override
-    public int compareTo(Evaluation otherEval) {
+    public int compareTo(@NotNull Evaluation otherEval) {
         if (winner == PieceColor.WHITE) {
             if (otherEval.winner == PieceColor.WHITE) {
                 return 0;

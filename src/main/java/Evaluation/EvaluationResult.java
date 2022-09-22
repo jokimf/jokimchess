@@ -3,6 +3,7 @@ package Evaluation;
 import Chessboard.Move;
 
 public class EvaluationResult {
+    //TODO: can be a record?
     private Evaluation eval;
     private Move move;
 

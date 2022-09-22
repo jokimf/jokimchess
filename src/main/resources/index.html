@@ -4,35 +4,44 @@
 	<meta charset="UTF-8">
 	<title>Chess</title>
 </head>
-<body onload="drawBoard()">
+<body>
 <div class="content">
 	<div>
-		<button type="button" onclick="drawPieces()">Standard game</button>
-		<label for="fen">OR ENTER FEN</label>
-		<br>
+		<label for="fen">Enter FEN (optional)</label>
 		<input id="fen" name="fen">
 		<button onclick="drawPieces()">Start</button>
 	</div>
-	<canvas id="board"></canvas>
-	<div>Test text</div>
+	<div id="stage"></div>
 </div>
 </body>
+<script src="https://unpkg.com/konva@8/konva.min.js"></script>
 <script>
-    const canvas = document.getElementById('board');
-    const ctx = canvas.getContext('2d');
-
     const standardfen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const size = 800;
     const tileSize = size / 8;
 
+    let stage = new Konva.Stage({
+        container: 'stage',
+        width: size,
+        height: size
+    });
+
+    let background = new Konva.Layer();
+    let piecesLayer = new Konva.Layer();
+    drawBackground();
+
+    stage.add(background);
+    stage.add(piecesLayer);
+    background.draw();
+    piecesLayer.draw();
+
     function drawPieces() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawBoard();
+        piecesLayer.destroyChildren();
         let fen = document.getElementById("fen").value;
         if (fen === undefined || fen === "") {
             fen = standardfen;
         }
-
+        let splitfen = fen.split(" ")[0].split("/"); // 2r1r1k1/5p1p/p2q1p2/3p1b2/1R2p3/2P1Q3/PP2PPPP/2K2B1R b - - 0 19
         let lookup = {
             "r": "bR.png",
             "n": "bN.png",
@@ -47,19 +56,13 @@
             "K": "wK.png",
             "P": "wP.png"
         };
-        let splitfen = fen.split(" ")[0].split("/"); // 2r1r1k1/5p1p/p2q1p2/3p1b2/1R2p3/2P1Q3/PP2PPPP/2K2B1R b - - 0 19
-
         for (let rowIndex = 0; rowIndex < splitfen.length; rowIndex++) {
             let colIndex = 0;
             for (let charIndex = 0; charIndex < splitfen[rowIndex].length; charIndex++) {
                 let char = splitfen[rowIndex].charAt(charIndex);
                 if (lookup.hasOwnProperty(char)) {
                     let column = colIndex, row = rowIndex;
-                    let img = new Image();
-                    img.src = lookup[char];
-                    img.onload = function () {
-                        ctx.drawImage(img, column * tileSize + tileSize / 21, row * tileSize + tileSize * 0.075, tileSize * 0.9, tileSize * 0.85);
-                    }
+                    drawPiece(lookup[char], column, row);
                     colIndex++;
                 } else {
                     colIndex += parseInt(char);
@@ -68,16 +71,64 @@
         }
     }
 
-    function drawBoard() {
-        canvas.height = size;
-        canvas.width = size;
-        ctx.fillStyle = "rgb(155,166,201)"
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "rgb(35,38,48)"
-        for (let i = 0; i <= 4; i++) {
-            for (let j = 0; j <= 4; j++) {
-                ctx.fillRect(j * tileSize * 2, i * tileSize * 2 + tileSize, tileSize, tileSize);
-                ctx.fillRect(j * tileSize * 2 + tileSize, i * tileSize * 2, tileSize, tileSize);
+    function drawPiece(pieceStr, positionX, positionY) {
+        let imageObj = new Image();
+        imageObj.onload = function () {
+            piecesLayer.add(new Image())
+        }
+        imageObj.src = pieceStr;
+        let piece = new Konva.Image({
+            image: imageObj,
+            x: positionX * tileSize,
+            y: positionY * tileSize,
+            width: tileSize,
+            height: tileSize,
+            draggable: true
+        });
+
+        piece.on('dragstart', function () {
+            // Find out starting square
+            let position = stage.getPointerPosition();
+            let xStart = Math.floor(position.x / tileSize);
+            let yStart = Math.floor(position.y / tileSize);
+        });
+        piece.on('dragmove', function () {
+            // Snap piece to mouse
+            let mouse = stage.getPointerPosition();
+            piece.setAttr("x", mouse.x - tileSize / 2);
+            piece.setAttr("y", mouse.y - tileSize / 2);
+        });
+        piece.on('dragend', function () {
+            let position = stage.getPointerPosition();
+            let xEnd = Math.floor(position.x / tileSize);
+            let yEnd = Math.floor(position.y / tileSize);
+
+            // TODO: Figure out move, check if valid -> java?
+            // Check if it's players turn
+            // If it's a capture, remove piece at that position
+
+            // Snap to new position if move valid
+            let snapX = Math.round(piece.attrs.x / tileSize);
+            let snapY = Math.round(piece.attrs.y / tileSize);
+            piece.setAttr("x", snapX * tileSize);
+            piece.setAttr("y", snapY * tileSize);
+        });
+        piecesLayer.add(piece);
+    }
+
+    function drawBackground() {
+        let color = "rgb(155,166,201)";
+        for (let i = 0; i < 8; i++) {
+            color = color === "rgb(155,166,201)" ? "rgb(35,38,48)" : "rgb(155,166,201)";
+            for (let j = 0; j < 8; j++) {
+                color = color === "rgb(155,166,201)" ? "rgb(35,38,48)" : "rgb(155,166,201)";
+                background.add(new Konva.Rect({
+                    x: j * tileSize,
+                    y: i * tileSize,
+                    width: tileSize,
+                    height: tileSize,
+                    fill: color,
+                }));
             }
         }
     }

@@ -33,7 +33,7 @@ public class Move {
                 }
             case PROMOTION_B:
             case PROMOTION_W:
-                // TODO: Nicht unbedingt immer zu einer Queen promoted, kann auch capture sein
+                // TODO: Not necessarilty promoted to queen. Could also be a capture
                 if (pieceTaken != null) {
                     return FENHelper.positionToString(x, y) + "x" + FENHelper.positionToString(targetX, targetY) + "=Q";
                 }

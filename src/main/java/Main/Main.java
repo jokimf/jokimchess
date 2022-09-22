@@ -4,17 +4,13 @@ import Chessboard.Board;
 import Chessboard.FENHelper;
 import Chessboard.Move;
 import Enums.MoveType;
-import Evaluation.Evaluator;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 public class Main {
+
+    //TODO: Game takes args 'fen' and 'depth', gives move back
 
     public static void main(String[] args) throws IOException {
         new ChessAPI().startBackend();

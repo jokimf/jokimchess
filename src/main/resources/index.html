@@ -129,7 +129,7 @@
                     fen = updateFen(moveString);
                     // If it's a capture, remove piece at that position
                 } else {
-                    // Snap to original position
+                    // Move not valid, snap to original position
                     piece.setAttr("x", xStart * tileSize);
                     piece.setAttr("y", yStart * tileSize);
                 }

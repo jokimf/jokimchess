@@ -10,7 +10,9 @@ import io.javalin.core.JavalinConfig;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChessAPI {
     private Evaluator e = new Evaluator();
@@ -34,10 +36,29 @@ public class ChessAPI {
 
         app.get("/chess/availableMoves", ctx -> {
             String fen = ctx.queryParam("fen");
-            List<String> b = new ArrayList<>();
-            new FENHelper(fen).toBoard().allPossibleMoves(true).forEach(move -> b.add(move.simpleToString()));
+            List<Map<String, String>> b = new ArrayList<>();
+            List<Move> moves = new FENHelper(fen).toBoard().allPossibleMoves(true);
+
+            for (Move m : moves) {
+                Map<String, String> move = new HashMap<>();
+                move.put("startX", String.valueOf(m.getPos()[0]));
+                move.put("startY", String.valueOf(m.getPos()[1]));
+                move.put("endX", String.valueOf(m.getTargetPos()[0]));
+                move.put("endY", String.valueOf(m.getTargetPos()[1]));
+                move.put("movetype", m.getMoveType().toString());
+                move.put("pieceMoved", m.getPieceMoved().toString());
+                move.put("pieceTaken", m.getPieceTaken().toString());
+                b.add(move);
+            }
             ctx.status(200);
             ctx.json(b);
+        });
+
+        app.get("/chess/moves", ctx -> {
+            String fen = ctx.queryParam("fen");
+            List<Move> moves = new FENHelper(fen).toBoard().allPossibleMoves(true);
+            ctx.status(200);
+            ctx.json(moves);
         });
 
         app.get("/chess/newFen", ctx -> {

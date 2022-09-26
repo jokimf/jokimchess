@@ -28,11 +28,8 @@ public class Move {
         this.moveType = MoveType.NORMAL;
     }
 
-    public String simpleToString() {
-        return FENHelper.positionToString(x, y) + FENHelper.positionToString(targetX, targetY);
-    }
-
     public String toString() {
+        //a2f4, a5xf5, a7a8=Q, a7xb8=N, 0-0
         switch (moveType) {
             case CASTLING_KINGSIDE_B, CASTLING_KINGSIDE_W:
                 return "O-O";

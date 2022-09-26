@@ -9,13 +9,15 @@
 	<div>
 		<label for="fen">Enter FEN (optional)</label>
 		<input id="fen" name="fen">
-		<button onclick="drawPieces()">Start</button>
+		<button onclick="setup()">Start</button>
 	</div>
 	<div id="stage"></div>
 </div>
 </body>
 <script src="https://unpkg.com/konva@8/konva.min.js"></script>
 <script>
+    let board = Array.from(Array(8), () => new Array(8));
+
     const standardfen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const size = 800;
     const tileSize = size / 8;
@@ -33,23 +35,28 @@
         width: size,
         height: size
     });
-
     let background = new Konva.Layer();
     let piecesLayer = new Konva.Layer();
-    drawBackground();
-
     stage.add(background);
+
     stage.add(piecesLayer);
     background.draw();
     piecesLayer.draw();
 
-    function drawPieces() {
-        piecesLayer.destroyChildren();
+    drawBackground();
+
+    function setup() {
         fen = document.getElementById("fen").value;
-        legalMoves = fetchMoves();
         if (fen === undefined || fen === "") {
             fen = standardfen;
+            document.getElementById("fen").value = fen;
         }
+        updateLegalMoves();
+        drawPieces();
+    }
+
+    function drawPieces() {
+        piecesLayer.destroyChildren();
         let splitfen = fen.split(" ")[0].split("/"); // 2r1r1k1/5p1p/p2q1p2/3p1b2/1R2p3/2P1Q3/PP2PPPP/2K2B1R b - - 0 19
         let lookup = {
             "r": "bR.png",
@@ -112,45 +119,51 @@
             xEnd = Math.floor(position.x / tileSize);
             yEnd = Math.floor(position.y / tileSize);
 
-            let moveString = simpleToString(xStart, yStart, xEnd, yEnd);
+            let moveString = simpleToString(xStart, yStart, xEnd, yEnd); //TODO better move det
             console.log(moveString);
 
             // Move valid?
-            legalMoves.then(moves => {
-                console.log(moves);
-                if (playerTurn && moves.includes(moveString)) {
-                    // Snap to new position if move valid
-                    let snapX = Math.round(piece.attrs.x / tileSize);
-                    let snapY = Math.round(piece.attrs.y / tileSize);
-                    piece.setAttr("x", snapX * tileSize);
-                    piece.setAttr("y", snapY * tileSize);
-                    playerTurn = !playerTurn;
+            if (playerTurn && legalMoves.includes(moveString)) {
+                // Snap to new position if move valid
+                let snapX = Math.round(piece.attrs.x / tileSize);
+                let snapY = Math.round(piece.attrs.y / tileSize);
+                piece.setAttr("x", snapX * tileSize);
+                piece.setAttr("y", snapY * tileSize);
+                playerTurn = !playerTurn;
 
-                    fen = updateFen(moveString);
-                    // If it's a capture, remove piece at that position
-                } else {
-                    // Move not valid, snap to original position
-                    piece.setAttr("x", xStart * tileSize);
-                    piece.setAttr("y", yStart * tileSize);
-                }
-            })
-
+                updateFen(moveString);
+                // If it's a capture, remove piece at that position
+            } else {
+                // Move not valid, snap to original position
+                piece.setAttr("x", xStart * tileSize);
+                piece.setAttr("y", yStart * tileSize);
+            }
         });
         piecesLayer.add(piece);
     }
 
-    function updateFen(moveString) {
-        //const response = await fetch("http://localhost:7001/chess/newFen?" + new URLSearchParams({
-        //    fen: fen,
-        //    move: moveString
-        //}));
-
+    function updateLegalMoves() {
+        const responsePromise = fetch("http://localhost:7001/chess/availableMoves?" + new URLSearchParams({fen: fen}));
+        responsePromise.then(response => {
+            response.json().then(json => {
+                console.log(json);
+                legalMoves = json;
+            });
+        })
     }
 
-    async function fetchMoves() { // Returns promise
-        const response = await fetch("http://localhost:7001/chess/availableMoves?" + new URLSearchParams({fen: fen}));
-        const json = await response.json();
-        return json;
+    function updateFen(moveString) {
+        const responsePromise = fetch("http://localhost:7001/chess/newFen?" + new URLSearchParams({
+            fen: fen,
+            move: moveString
+        }));
+        responsePromise.then(response => {
+            console.log(response.text().then(backendFen => {
+                fen = backendFen;
+            }));
+        })
+        updateLegalMoves();
+        fen = standardfen;
     }
 
     function simpleToString() {

@@ -31,7 +31,7 @@ public class FENHelper {
                     }
                     i += skip - 1;
                 } else {
-                    Piece p = new Piece(end, i, pieceSymbol);
+                    Piece p = new Piece(end, i, pieceSymbol,false);
                     boolean isWhiteRook = pieceSymbol == 'R', isBlackRook = pieceSymbol == 'r', isWhiteKing = pieceSymbol == 'K', isBlackKing = pieceSymbol == 'k';
 
                     // Rook castleability

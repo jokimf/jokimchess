@@ -33,7 +33,7 @@ public class Board {
     public void playMove(Move m) {
         moveArchive.add(m);
         Piece p = m.getPieceMoved();
-        int targetX = m.getTargetPos()[0], targetY = m.getTargetPos()[1], startX = m.getPos()[0], startY = m.getPos()[1];
+        int targetX = m.getTargetX(), targetY = m.getTargetY(), startX = m.getStartX(), startY = m.getStartY();
         boolean pieceIsWhite = p.getPieceColor() == PieceColor.WHITE;
         // TODO: Add JUMPSTART movetype to set enPassantSquare
         // TODO: King loses castling rights on move
@@ -48,28 +48,28 @@ public class Board {
                 }
                 break;
             case ENPASSANT_W:
-                                                         p.setPosition(targetX, targetY);
-                piecesOnTheBoard.remove(getPieceAt(m.getTargetPos()[0] + 1, m.getTargetPos()[1]));
+                p.setPosition(targetX, targetY);
+                piecesOnTheBoard.remove(getPieceAt(targetX + 1, targetY));
                 board[targetX][targetY] = p;
                 board[startX][startY] = null;
                 board[enPassantSquare[0] + 1][enPassantSquare[1]] = null;
                 break;
             case ENPASSANT_B:
                 p.setPosition(targetX, targetY);
-                piecesOnTheBoard.remove(getPieceAt(m.getTargetPos()[0] - 1, m.getTargetPos()[1]));
+                piecesOnTheBoard.remove(getPieceAt(targetX - 1, targetY));
                 board[targetX][targetY] = p;
                 board[startX][startY] = null;
                 board[enPassantSquare[0] - 1][enPassantSquare[1]] = null;
                 break;
             case PROMOTION_W:
-                Piece newWhiteQueen = new Piece(targetX, targetY, 'Q');
+                Piece newWhiteQueen = new Piece(targetX, targetY, 'Q',false);
                 board[targetX][targetY] = newWhiteQueen;
                 board[startX][startY] = null;
                 piecesOnTheBoard.remove(p);
                 piecesOnTheBoard.add(newWhiteQueen);
                 break;
             case PROMOTION_B:
-                Piece newBlackQueen = new Piece(targetX, targetY, 'q');
+                Piece newBlackQueen = new Piece(targetX, targetY, 'q',false);
                 board[targetX][targetY] = newBlackQueen;
                 board[startX][startY] = null;
                 piecesOnTheBoard.remove(p);
@@ -146,8 +146,7 @@ public class Board {
 
     public void undoLastMove() {
         Move m = moveArchive.pop();
-        int[] targetPos = m.getTargetPos(), startPos = m.getPos();
-        int targetX = targetPos[0], targetY = targetPos[1], startX = m.getPos()[0], startY = m.getPos()[1];
+        int targetX = m.getTargetX(), targetY = m.getTargetY(), startX = m.getStartX(), startY = m.getStartY();
         Piece pieceMoved = m.getPieceMoved(), pieceTaken = m.getPieceTaken();
         switch (m.getMoveType()) {
             case NORMAL:
@@ -369,8 +368,8 @@ public class Board {
         // Filter moves by invalid position
         List<Move> movesWithoutWrongCoordinates = new ArrayList<>(moves);
         for (Move m : movesWithoutWrongCoordinates) {
-            int[] targetPosition = m.getTargetPos();
-            if (targetPosition[0] > 7 || targetPosition[1] > 7 || targetPosition[0] < 0 || targetPosition[1] < 0) {
+            int targetX = m.getTargetX(), targetY = m.getTargetY();
+            if (targetX > 7 || targetY > 7 || targetX < 0 || targetY < 0) {
                 moves.remove(m);
             }
         }

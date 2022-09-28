@@ -11,7 +11,6 @@ import java.util.HashMap;
 public class Main {
 
     //TODO: Game takes args 'fen' and 'depth', gives move back
-
     public static void main(String[] args) throws IOException {
         new ChessAPI().startBackend();
 //        FENHelper f5 = new FENHelper();

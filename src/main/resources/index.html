@@ -9,7 +9,7 @@
 	<div>
 		<label for="fen">Enter FEN (optional)</label>
 		<input id="fen" name="fen">
-		<button onclick="setup()">Start</button>
+		<button onclick="setup(true)">Start</button>
 	</div>
 	<div id="stage"></div>
 </div>
@@ -44,8 +44,8 @@
 
     drawBackground();
 
-    function setup() {
-        fen = document.getElementById("fen").value;
+    function setup(redraw) {
+        fen = redraw ? document.getElementById("fen").value : fen;
         if (fen === undefined || fen === "") {
             fen = standardfen;
             document.getElementById("fen").value = fen;
@@ -157,7 +157,8 @@
             response.text().then(backendFen => {
                 console.log(backendFen);
                 fen = backendFen;
-                updateLegalMoves();
+                //updateLegalMoves();
+                setup(false);
             });
         })
 

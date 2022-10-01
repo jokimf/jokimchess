@@ -3,7 +3,11 @@ package Main;
 import Chessboard.Board;
 import Chessboard.FENHelper;
 import Chessboard.Move;
+import Chessboard.Piece;
 import Enums.MoveType;
+import Enums.PieceColor;
+import Enums.PieceType;
+import Evaluation.Evaluator;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -13,6 +17,8 @@ public class Main {
     //TODO: Game takes args 'fen' and 'depth', gives move back
     public static void main(String[] args) throws IOException {
         new ChessAPI().startBackend();
+
+
 //        FENHelper f5 = new FENHelper();
 //        Board b5 = f5.fenToBoard();
 //        Evaluator e = new Evaluator();

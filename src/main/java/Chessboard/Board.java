@@ -32,90 +32,92 @@ public class Board {
 
     public void playMove(Move m) {
         moveArchive.add(m);
-        Piece p = m.getPieceMoved();
+        Piece piece = m.getPieceMoved(), pieceTaken = m.getPieceTaken();
         int targetX = m.getTargetX(), targetY = m.getTargetY(), startX = m.getStartX(), startY = m.getStartY();
-        boolean pieceIsWhite = p.getPieceColor() == PieceColor.WHITE;
+        boolean pieceIsWhite = piece.getPieceColor() == PieceColor.WHITE;
         // TODO: Add JUMPSTART movetype to set enPassantSquare
         // TODO: King loses castling rights on move
         // TODO: allPiecesOnTheBoard refresh on capture
+        // TODO: castling options fix
         switch (m.getMoveType()) {
             case NORMAL:
-                board[targetX][targetY] = p;
+                board[targetX][targetY] = piece;
                 board[startX][startY] = null;
-                p.setPosition(targetX, targetY);
-                if (m.getPieceTaken() != null) {
-                    piecesOnTheBoard.remove(m.getPieceTaken());
+                piece.setPosition(targetX, targetY);
+                if (pieceTaken != null) {
+                    piecesOnTheBoard.remove(pieceTaken);
                 }
                 break;
             case ENPASSANT_W:
-                p.setPosition(targetX, targetY);
+                piece.setPosition(targetX, targetY);
                 piecesOnTheBoard.remove(getPieceAt(targetX + 1, targetY));
-                board[targetX][targetY] = p;
+                board[targetX][targetY] = piece;
                 board[startX][startY] = null;
                 board[enPassantSquare[0] + 1][enPassantSquare[1]] = null;
                 break;
             case ENPASSANT_B:
-                p.setPosition(targetX, targetY);
+                piece.setPosition(targetX, targetY);
                 piecesOnTheBoard.remove(getPieceAt(targetX - 1, targetY));
-                board[targetX][targetY] = p;
+                board[targetX][targetY] = piece;
                 board[startX][startY] = null;
                 board[enPassantSquare[0] - 1][enPassantSquare[1]] = null;
                 break;
-            case PROMOTION_W:
-                Piece newWhiteQueen = new Piece(targetX, targetY, 'Q',false);
-                board[targetX][targetY] = newWhiteQueen;
+            case PROMOTION_W, PROMOTION_B:
+                System.out.println(pieceTaken);
+                if (pieceTaken != null) {
+                    piecesOnTheBoard.remove(pieceTaken);
+                }
+                piecesOnTheBoard.remove(piece); // Remove pawn
+                Piece newQueen = new Piece(targetX, targetY, piece.getPieceColor() == PieceColor.WHITE ? 'Q' : 'q', false);
+                board[targetX][targetY] = newQueen;
                 board[startX][startY] = null;
-                piecesOnTheBoard.remove(p);
-                piecesOnTheBoard.add(newWhiteQueen);
-                break;
-            case PROMOTION_B:
-                Piece newBlackQueen = new Piece(targetX, targetY, 'q',false);
-                board[targetX][targetY] = newBlackQueen;
-                board[startX][startY] = null;
-                piecesOnTheBoard.remove(p);
-                piecesOnTheBoard.add(newBlackQueen);
+                piecesOnTheBoard.add(newQueen);
                 break;
             case CASTLING_KINGSIDE_W:
-                Piece rookW = this.getPieceAt(7, 7);
-                board[targetX][targetY] = p;
+                board[targetX][targetY] = piece;
                 board[startX][startY] = null;
-                board[targetX][targetY + 1] = null;
-                board[targetX][targetY - 1] = rookW;
-                p.setPosition(targetX, targetY);
-                rookW.setPosition(targetX, targetY - 1);
+                piece.setPosition(targetX, targetY);
+                Piece rookA8 = this.getPieceAt(7, 7);
+                board[7][7] = null;
+                board[targetX][targetY - 1] = rookA8;
+                rookA8.setPosition(targetX, targetY - 1);
+                rookA8.setCastle(false);
                 castlingOptions[0] = false;
                 castlingOptions[1] = false;
                 break;
             case CASTLING_QUEENSIDE_W:
-                Piece rookB2 = this.getPieceAt(7, 0);
-                board[targetX][targetY] = p;
+                Piece rookA1 = this.getPieceAt(7, 0);
+                board[targetX][targetY] = piece;
                 board[startX][startY] = null;
-                board[targetX][targetY - 2] = null;
-                board[targetX][targetY + 1] = rookB2;
-                p.setPosition(targetX, targetY);
-                rookB2.setPosition(targetX, targetY);
+                board[7][0] = null;
+                board[targetX][targetY + 1] = rookA1;
+                piece.setPosition(targetX, targetY);
+                rookA1.setPosition(targetX, targetY + 1);
+                rookA1.setCastle(false);
                 castlingOptions[0] = false;
                 castlingOptions[1] = false;
                 break;
             case CASTLING_KINGSIDE_B:
-                Piece rook = this.getPieceAt(0, 7);
-                board[targetX][targetY] = p;
+                Piece rookH8 = this.getPieceAt(0, 7);
+                board[targetX][targetY] = piece;
                 board[startX][startY] = null;
                 board[targetX][targetY + 1] = null;
-                board[targetX][targetY - 1] = rook;
-                p.setPosition(targetX, targetY);
-                rook.setPosition(targetX, targetY - 1);
+                board[targetX][targetY - 1] = rookH8;
+                piece.setPosition(targetX, targetY);
+                rookH8.setPosition(targetX, targetY - 1);
+                rookH8.setCastle(false);
                 castlingOptions[2] = false;
                 castlingOptions[3] = false;
                 break;
             case CASTLING_QUEENSIDE_B:
-                Piece rookB = this.getPieceAt(0, 0);
-                board[targetX][targetY] = p;
+                Piece rookH1 = this.getPieceAt(0, 0);
+                board[targetX][targetY] = piece;
                 board[startX][startY] = null;
                 board[targetX][targetY - 2] = null;
-                board[targetX][targetY + 1] = rookB;
-                p.setPosition(targetX, targetY);
-                rookB.setPosition(targetX, targetY + 1);
+                board[targetX][targetY + 1] = rookH1;
+                piece.setPosition(targetX, targetY);
+                rookH1.setPosition(targetX, targetY + 1);
+                rookH1.setCastle(false);
                 castlingOptions[2] = false;
                 castlingOptions[3] = false;
                 break;
@@ -123,7 +125,7 @@ public class Board {
         if (!turnWhite) {
             fullmove++;
         }
-        if (p.getPieceType() == PieceType.PAWN || m.getPieceTaken() != null) {
+        if (piece.getPieceType() == PieceType.PAWN || pieceTaken != null) {
             halfmovesBeforeUndo = halfmove;
             halfmove = -1;
         }
@@ -131,18 +133,6 @@ public class Board {
         halfmovesBeforeUndo = 0;
         this.turnWhite = !turnWhite;
     }
-
-    public List<Move> allPossibleMoves(boolean checkTest) {
-        PieceColor activeColor = turnWhite ? PieceColor.WHITE : PieceColor.BLACK;
-        List<Move> moves = new ArrayList<>();
-        List<Piece> filtered = piecesOnTheBoard.stream().filter(p -> p.getPieceColor() == activeColor).collect(Collectors.toList());
-
-        for (Piece p : filtered) {
-            moves.addAll(availableMovesForPiece(p, checkTest));
-        }
-        return moves;
-    }
-
 
     public void undoLastMove() {
         Move m = moveArchive.pop();
@@ -164,26 +154,32 @@ public class Board {
                 board[startX][startY] = pieceMoved;
                 board[enPassantSquare[0] - 1][enPassantSquare[1]] = pieceTaken;
                 pieceMoved.setPosition(startX, startY);
+                piecesOnTheBoard.add(pieceTaken);
                 break;
             case ENPASSANT_W:
                 board[targetX][targetY] = null;
                 board[startX][startY] = pieceMoved;
                 board[enPassantSquare[0] + 1][enPassantSquare[1]] = pieceTaken;
                 pieceMoved.setPosition(startX, startY);
+                piecesOnTheBoard.add(pieceTaken);
                 break;
-            case PROMOTION_W:
-                board[targetX][targetY] = pieceTaken;
+            case PROMOTION_W, PROMOTION_B:
+                piecesOnTheBoard.remove(getPieceAt(targetX, targetY)); // Remove new quuen
+                piecesOnTheBoard.add(pieceMoved);
                 board[startX][startY] = pieceMoved;
-                break;
-            case PROMOTION_B:
                 board[targetX][targetY] = pieceTaken;
-                board[startX][startY] = pieceMoved;
+                if (pieceTaken != null) {
+                    piecesOnTheBoard.add(pieceTaken);
+                }
                 break;
             case CASTLING_KINGSIDE_W:
                 board[targetX][targetY] = null;
                 board[startX][startY] = pieceMoved;
-                board[targetX][targetY + 1] = new Piece(targetX, targetY, 'R', true);
-                board[targetX][targetY - 1] = null;
+                Piece rookH1 = getPieceAt(7, 5);
+                rookH1.setPosition(7, 7);
+                rookH1.setCastle(true);
+                board[7][7] = rookH1;
+                board[7][5] = null;
                 castlingOptions[0] = true;
                 castlingOptions[1] = true;
                 pieceMoved.setPosition(startX, startY);
@@ -191,40 +187,60 @@ public class Board {
             case CASTLING_QUEENSIDE_W:
                 board[targetX][targetY] = null;
                 board[startX][startY] = pieceMoved;
-                board[targetX][targetY - 2] = new Piece(targetX, targetY, 'R', true);
-                board[targetX][targetY + 1] = null;
-                castlingOptions[0] = true;
+                Piece rookA1 = getPieceAt(7, 3);
+                rookA1.setPosition(7, 0);
+                rookA1.setCastle(true);
+                board[7][0] = rookA1;
+                board[7][3] = null;
                 castlingOptions[1] = true;
+                castlingOptions[0] = true;
                 pieceMoved.setPosition(startX, startY);
                 break;
             case CASTLING_KINGSIDE_B:
                 board[targetX][targetY] = null;
                 board[startX][startY] = pieceMoved;
-                board[targetX][targetY + 1] = new Piece(targetX, targetY, 'r', true);
-                board[targetX][targetY - 1] = null;
+                Piece rookH8 = getPieceAt(0, 5);
+                rookH8.setPosition(0, 7);
+                rookH8.setCastle(true);
+                board[0][7] = rookH8;
+                board[0][5] = null;
                 castlingOptions[2] = true;
                 castlingOptions[3] = true;
                 pieceMoved.setPosition(startX, startY);
                 break;
             case CASTLING_QUEENSIDE_B:
-                board[targetX][targetY] = null;
-                board[startX][startY] = pieceMoved;
-                board[targetX][targetY - 2] = new Piece(targetX, targetY, 'r', true);
-                board[targetX][targetY + 1] = null;
+                board[0][2] = null;
+                board[0][4] = pieceMoved;
+                Piece rookA8 = getPieceAt(0, 3);
+                rookA8.setPosition(0, 0);
+                rookA8.setCastle(true);
+                board[0][0] = rookA8;
+                board[0][3] = null;
                 castlingOptions[2] = true;
                 castlingOptions[3] = true;
-                pieceMoved.setPosition(startX, startY);
+                pieceMoved.setPosition(0, 4);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown MoveType: " + m.getMoveType().toString());
         }
-
         if (turnWhite) {
             fullmove--;
         }
         halfmove = halfmovesBeforeUndo > 0 ? halfmovesBeforeUndo : halfmove - 1;
         this.turnWhite = !turnWhite;
     }
+
+    public List<Move> allPossibleMoves(boolean checkTest) {
+        PieceColor activeColor = turnWhite ? PieceColor.WHITE : PieceColor.BLACK;
+        List<Move> moves = new ArrayList<>();
+        List<Piece> filtered = piecesOnTheBoard.stream().filter(p -> p.getPieceColor() == activeColor).collect(Collectors.toList());
+
+        for (Piece p : filtered) {
+            moves.addAll(availableMovesForPiece(p, checkTest));
+        }
+        return moves;
+    }
+
 
     private List<Move> availableMovesForPiece(Piece piece, boolean checkTest) {
         List<Move> moves = new ArrayList<>();

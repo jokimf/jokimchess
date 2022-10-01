@@ -44,6 +44,14 @@
 
     drawBackground();
 
+    // User plays legal move
+    // Fetch new FEN
+    // Freeze board
+    // Fetch BOT_FEN with FEN
+    // Display new FEN upon arrival
+    // Unfreeze
+
+
     function setup(redraw) {
         fen = redraw ? document.getElementById("fen").value : fen;
         if (fen === undefined || fen === "") {
@@ -122,10 +130,8 @@
                 let snapY = Math.round(piece.attrs.y / tileSize);
                 piece.setAttr("x", snapX * tileSize);
                 piece.setAttr("y", snapY * tileSize);
-                //playerTurn = !playerTurn;
-
+                playerTurn = !playerTurn;
                 updateFen();
-                // TODO: If it's a capture, remove piece at that position
             } else {
                 // Move not valid, snap to original position
                 piece.setAttr("x", startX * tileSize);
@@ -155,12 +161,12 @@
         const responsePromise = fetch("http://localhost:7001/chess/newFen?" + new URLSearchParams(info));
         responsePromise.then(response => {
             response.text().then(backendFen => {
-                console.log(backendFen);
                 fen = backendFen;
                 //updateLegalMoves();
                 setup(false);
+                playBotMove();
             });
-        })
+        });
 
     }
 
@@ -168,8 +174,20 @@
         const responsePromise = fetch("http://localhost:7001/chess/moves?" + new URLSearchParams({fen: fen}));
         responsePromise.then(response => {
             response.json().then(json => {
-                console.log(json);
                 legalMoves = json;
+            });
+        })
+    }
+
+    function playBotMove() {
+        const responsePromise = fetch("http://localhost:7001/chess/bot?" + new URLSearchParams({fen: fen}));
+        console.log(fen);
+        responsePromise.then(response => {
+            response.text().then(backendFen => {
+                console.log(backendFen);
+                fen = backendFen;
+                playerTurn = !playerTurn;
+                setup(false);
             });
         })
     }

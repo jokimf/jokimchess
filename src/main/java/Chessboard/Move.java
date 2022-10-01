@@ -17,17 +17,6 @@ public class Move {
         this.moveType = moveType;
     }
 
-    public Move(String notation) {
-        // Make it better..
-        this.startX = (int) notation.charAt(0) - 97;
-        this.startY = 8 - ((int) notation.charAt(1) - 48);
-        this.targetX = (int) notation.charAt(2) - 97;
-        this.targetY = 8 - ((int) notation.charAt(3) - 48);
-        this.pieceTaken = null;
-        this.pieceMoved = new Piece(startX, startY, 'Q', false);
-        this.moveType = MoveType.NORMAL;
-    }
-
     public String toString() {
         //a2f4, a5xf5, a7a8=Q, a7xb8=N, 0-0
         switch (moveType) {

@@ -47,6 +47,16 @@ public class ChessAPI {
             ctx.json(f.boardToFen(b));
         });
 
+        app.get("/chess/bot", ctx -> {
+            String fen = ctx.queryParam("fen");
+            Board b = new FENHelper(fen).toBoard();
+            Move bestMove = e.determineBestMove(b);
+            b.playMove(bestMove);
+            String abfahrt = new FENHelper().boardToFen(b);
+            ctx.status(200);
+            ctx.result(abfahrt);
+        });
+
         // Not important for frontend
         app.get("/chess/eval", ctx -> {
             String fen = ctx.queryParam("fen");

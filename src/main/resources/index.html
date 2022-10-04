@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!--suppress JSSuspiciousNameCombination -->
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
@@ -9,7 +10,10 @@
 	<div>
 		<label for="fen">Enter FEN (optional)</label>
 		<input id="fen" name="fen">
-		<button onclick="setup(true)">Start</button>
+		<button onclick="drawPieces(true)">Start</button>
+		<br>
+		Eval:
+		<div id="eval"></div>
 	</div>
 	<div id="stage"></div>
 </div>
@@ -25,34 +29,24 @@
     let legalMoves;
     let lastMove;
 
-    // load fen
-    // send backend fen, response sends available moves
-    // save available moves, if player does move, look if its in avaliabl moves
-    // if succssful, send new move to backend
     let stage = new Konva.Stage({
         container: 'stage',
         width: size,
         height: size
     });
-    let background = new Konva.Layer();
+    let backgroundLayer = new Konva.Layer();
     let piecesLayer = new Konva.Layer();
-    stage.add(background);
-
+    let highlightLayer = new Konva.Layer();
+    stage.add(backgroundLayer);
+    stage.add(highlightLayer)
     stage.add(piecesLayer);
-    background.draw();
+    backgroundLayer.draw();
+    highlightLayer.draw();
     piecesLayer.draw();
 
     drawBackground();
 
-    // User plays legal move
-    // Fetch new FEN
-    // Freeze board
-    // Fetch BOT_FEN with FEN
-    // Display new FEN upon arrival
-    // Unfreeze
-
-
-    function setup(redraw) {
+    function drawPieces(redraw) {
         fen = redraw ? document.getElementById("fen").value : fen;
         if (fen === undefined || fen === "") {
             fen = standardfen;
@@ -80,8 +74,8 @@
             for (let charIndex = 0; charIndex < splitfen[rowIndex].length; charIndex++) {
                 let char = splitfen[rowIndex].charAt(charIndex);
                 if (lookup.hasOwnProperty(char)) {
-                    let column = colIndex, row = rowIndex;
-                    drawPiece(lookup[char], column, row);
+                    let column = colIndex;
+                    drawPiece(lookup[char], column, rowIndex);
                     colIndex++;
                 } else {
                     colIndex += parseInt(char);
@@ -131,6 +125,7 @@
                 piece.setAttr("x", snapX * tileSize);
                 piece.setAttr("y", snapY * tileSize);
                 playerTurn = !playerTurn;
+                highlightSquare(startY, startX, targetY, targetX);
                 updateFen();
             } else {
                 // Move not valid, snap to original position
@@ -163,7 +158,7 @@
             response.text().then(backendFen => {
                 fen = backendFen;
                 //updateLegalMoves();
-                setup(false);
+                drawPieces(false);
                 playBotMove();
             });
         });
@@ -183,13 +178,35 @@
         const responsePromise = fetch("http://localhost:7001/chess/bot?" + new URLSearchParams({fen: fen}));
         console.log(fen);
         responsePromise.then(response => {
-            response.text().then(backendFen => {
+            response.json().then(backendFen => {
                 console.log(backendFen);
-                fen = backendFen;
+                fen = backendFen['fen'];
+                let last_bot_move = backendFen['move'];
+                document.getElementById('eval').textContent = parseFloat(backendFen['eval']).toFixed(2);
+                highlightSquare(last_bot_move.startX, last_bot_move.startY, last_bot_move.targetX, last_bot_move.targetY);
                 playerTurn = !playerTurn;
-                setup(false);
+                drawPieces(false);
             });
         })
+    }
+
+
+    function highlightSquare(startX, startY, targetX, targetY) {
+        highlightLayer.destroyChildren();
+        highlightLayer.add(new Konva.Rect({
+            y: startX * tileSize,
+            x: startY * tileSize,
+            width: tileSize,
+            height: tileSize,
+            fill: 'rgba(155, 208, 135, 0.8)'
+        }));
+        highlightLayer.add(new Konva.Rect({
+            y: targetX * tileSize,
+            x: targetY * tileSize,
+            width: tileSize,
+            height: tileSize,
+            fill: 'rgba(155, 208, 135, 0.8)'
+        }));
     }
 
     function drawBackground() {
@@ -198,7 +215,7 @@
             color = color === "rgb(155,166,201)" ? "rgb(35,38,48)" : "rgb(155,166,201)";
             for (let j = 0; j < 8; j++) {
                 color = color === "rgb(155,166,201)" ? "rgb(35,38,48)" : "rgb(155,166,201)";
-                background.add(new Konva.Rect({
+                backgroundLayer.add(new Konva.Rect({
                     x: j * tileSize,
                     y: i * tileSize,
                     width: tileSize,
@@ -218,6 +235,10 @@
         display: flex;
         justify-content: center;
         gap: 40px;
+    }
+
+    #eval {
+        display: inline;
     }
 </style>
 </html>

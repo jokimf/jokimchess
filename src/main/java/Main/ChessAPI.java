@@ -13,13 +13,15 @@ import io.javalin.core.JavalinConfig;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChessAPI {
     private static final Evaluator e = new Evaluator();
 
     public void startBackend() {
-        // http://localhost:8002/chess/eval?fen=1rb2rk1/p1qnbppp/B7/2ppP3/3P4/4QN2/1Pn2PPP/R1B2RK1 w - - 0 15
+        // http://localhost:7001/chess/eval?fen=1rb2rk1/p1qnbppp/B7/2ppP3/3P4/4QN2/1Pn2PPP/R1B2RK1 w - - 0 15
         Javalin app = Javalin.create(JavalinConfig::enableCorsForAllOrigins).start(7001);
         app.get("/chess", ctx -> {
             String site = new String(Files.readAllBytes(Path.of("src/main/resources/index.html")));
@@ -48,13 +50,16 @@ public class ChessAPI {
         });
 
         app.get("/chess/bot", ctx -> {
-            String fen = ctx.queryParam("fen");
-            Board b = new FENHelper(fen).toBoard();
+            Board b = new FENHelper(ctx.queryParam("fen")).toBoard();
             Move bestMove = e.determineBestMove(b);
             b.playMove(bestMove);
-            String abfahrt = new FENHelper().boardToFen(b);
+
+            Map<String, Object> json = new HashMap<>();
+            json.put("fen", new FENHelper().boardToFen(b));
+            json.put("move", bestMove);
+            json.put("eval",e.evaluate_single_board(b));
             ctx.status(200);
-            ctx.result(abfahrt);
+            ctx.json(json);
         });
 
         // Not important for frontend

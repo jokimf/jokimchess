@@ -18,6 +18,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         new ChessAPI().startBackend();
 
+        //  Triggers server warning: 1r1qkb1r/ppp1nBpp/8/4PQP1/7P/2N5/PPPB4/2KR2NR b kq - -2 21
 
 //        FENHelper f5 = new FENHelper();
 //        Board b5 = f5.fenToBoard();

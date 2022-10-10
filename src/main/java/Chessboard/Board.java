@@ -5,7 +5,6 @@ import Enums.PieceColor;
 import Enums.PieceType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static Enums.MoveType.*;
 
@@ -32,37 +31,37 @@ public class Board {
 
     public void playMove(Move m) {
         moveArchive.add(m);
-        Piece piece = m.getPieceMoved(), pieceTaken = m.getPieceTaken();
-        int targetX = m.getTargetX(), targetY = m.getTargetY(), startX = m.getStartX(), startY = m.getStartY();
+        Piece piece = m.pieceMoved(), pieceTaken = m.pieceTaken();
+        int targetX = m.targetX(), targetY = m.targetY(), startX = m.startX(), startY = m.startY();
         boolean pieceIsWhite = piece.getPieceColor() == PieceColor.WHITE;
-        // TODO: Add JUMPSTART movetype to set enPassantSquare
+        // TODO: Add JUMPSTART moveType to set enPassantSquare
         // TODO: King loses castling rights on move
         // TODO: allPiecesOnTheBoard refresh on capture
         // TODO: castling options fix
-        switch (m.getMoveType()) {
-            case NORMAL:
+        switch (m.moveType()) {
+            case NORMAL -> {
                 board[targetX][targetY] = piece;
                 board[startX][startY] = null;
                 piece.setPosition(targetX, targetY);
                 if (pieceTaken != null) {
                     piecesOnTheBoard.remove(pieceTaken);
                 }
-                break;
-            case ENPASSANT_W:
+            }
+            case ENPASSANT_W -> {
                 piece.setPosition(targetX, targetY);
                 piecesOnTheBoard.remove(getPieceAt(targetX + 1, targetY));
                 board[targetX][targetY] = piece;
                 board[startX][startY] = null;
                 board[enPassantSquare[0] + 1][enPassantSquare[1]] = null;
-                break;
-            case ENPASSANT_B:
+            }
+            case ENPASSANT_B -> {
                 piece.setPosition(targetX, targetY);
                 piecesOnTheBoard.remove(getPieceAt(targetX - 1, targetY));
                 board[targetX][targetY] = piece;
                 board[startX][startY] = null;
                 board[enPassantSquare[0] - 1][enPassantSquare[1]] = null;
-                break;
-            case PROMOTION_W, PROMOTION_B:
+            }
+            case PROMOTION_W, PROMOTION_B -> {
                 System.out.println(pieceTaken);
                 if (pieceTaken != null) {
                     piecesOnTheBoard.remove(pieceTaken);
@@ -72,8 +71,8 @@ public class Board {
                 board[targetX][targetY] = newQueen;
                 board[startX][startY] = null;
                 piecesOnTheBoard.add(newQueen);
-                break;
-            case CASTLING_KINGSIDE_W:
+            }
+            case CASTLING_KINGSIDE_W -> {
                 board[targetX][targetY] = piece;
                 board[startX][startY] = null;
                 piece.setPosition(targetX, targetY);
@@ -84,8 +83,8 @@ public class Board {
                 rookA8.setCastle(false);
                 castlingOptions[0] = false;
                 castlingOptions[1] = false;
-                break;
-            case CASTLING_QUEENSIDE_W:
+            }
+            case CASTLING_QUEENSIDE_W -> {
                 Piece rookA1 = this.getPieceAt(7, 0);
                 board[targetX][targetY] = piece;
                 board[startX][startY] = null;
@@ -96,8 +95,8 @@ public class Board {
                 rookA1.setCastle(false);
                 castlingOptions[0] = false;
                 castlingOptions[1] = false;
-                break;
-            case CASTLING_KINGSIDE_B:
+            }
+            case CASTLING_KINGSIDE_B -> {
                 Piece rookH8 = this.getPieceAt(0, 7);
                 board[targetX][targetY] = piece;
                 board[startX][startY] = null;
@@ -108,8 +107,8 @@ public class Board {
                 rookH8.setCastle(false);
                 castlingOptions[2] = false;
                 castlingOptions[3] = false;
-                break;
-            case CASTLING_QUEENSIDE_B:
+            }
+            case CASTLING_QUEENSIDE_B -> {
                 Piece rookH1 = this.getPieceAt(0, 0);
                 board[targetX][targetY] = piece;
                 board[startX][startY] = null;
@@ -120,7 +119,7 @@ public class Board {
                 rookH1.setCastle(false);
                 castlingOptions[2] = false;
                 castlingOptions[3] = false;
-                break;
+            }
         }
         if (!turnWhite) {
             fullmove++;
@@ -136,10 +135,10 @@ public class Board {
 
     public void undoLastMove() {
         Move m = moveArchive.pop();
-        int targetX = m.getTargetX(), targetY = m.getTargetY(), startX = m.getStartX(), startY = m.getStartY();
-        Piece pieceMoved = m.getPieceMoved(), pieceTaken = m.getPieceTaken();
-        switch (m.getMoveType()) {
-            case NORMAL:
+        int targetX = m.targetX(), targetY = m.targetY(), startX = m.startX(), startY = m.startY();
+        Piece pieceMoved = m.pieceMoved(), pieceTaken = m.pieceTaken();
+        switch (m.moveType()) {
+            case NORMAL -> {
                 board[targetX][targetY] = pieceTaken;
                 board[startX][startY] = pieceMoved;
                 if (pieceTaken != null) {
@@ -147,32 +146,31 @@ public class Board {
                     piecesOnTheBoard.add(pieceTaken);
                 }
                 pieceMoved.setPosition(startX, startY);
-
-                break;
-            case ENPASSANT_B:
+            }
+            case ENPASSANT_B -> {
                 board[targetX][targetY] = null;
                 board[startX][startY] = pieceMoved;
                 board[enPassantSquare[0] - 1][enPassantSquare[1]] = pieceTaken;
                 pieceMoved.setPosition(startX, startY);
                 piecesOnTheBoard.add(pieceTaken);
-                break;
-            case ENPASSANT_W:
+            }
+            case ENPASSANT_W -> {
                 board[targetX][targetY] = null;
                 board[startX][startY] = pieceMoved;
                 board[enPassantSquare[0] + 1][enPassantSquare[1]] = pieceTaken;
                 pieceMoved.setPosition(startX, startY);
                 piecesOnTheBoard.add(pieceTaken);
-                break;
-            case PROMOTION_W, PROMOTION_B:
-                piecesOnTheBoard.remove(getPieceAt(targetX, targetY)); // Remove new quuen
+            }
+            case PROMOTION_W, PROMOTION_B -> {
+                piecesOnTheBoard.remove(getPieceAt(targetX, targetY)); // Remove new queen
                 piecesOnTheBoard.add(pieceMoved);
                 board[startX][startY] = pieceMoved;
                 board[targetX][targetY] = pieceTaken;
                 if (pieceTaken != null) {
                     piecesOnTheBoard.add(pieceTaken);
                 }
-                break;
-            case CASTLING_KINGSIDE_W:
+            }
+            case CASTLING_KINGSIDE_W -> {
                 board[targetX][targetY] = null;
                 board[startX][startY] = pieceMoved;
                 Piece rookH1 = getPieceAt(7, 5);
@@ -183,8 +181,8 @@ public class Board {
                 castlingOptions[0] = true;
                 castlingOptions[1] = true;
                 pieceMoved.setPosition(startX, startY);
-                break;
-            case CASTLING_QUEENSIDE_W:
+            }
+            case CASTLING_QUEENSIDE_W -> {
                 board[targetX][targetY] = null;
                 board[startX][startY] = pieceMoved;
                 Piece rookA1 = getPieceAt(7, 3);
@@ -195,8 +193,8 @@ public class Board {
                 castlingOptions[1] = true;
                 castlingOptions[0] = true;
                 pieceMoved.setPosition(startX, startY);
-                break;
-            case CASTLING_KINGSIDE_B:
+            }
+            case CASTLING_KINGSIDE_B -> {
                 board[targetX][targetY] = null;
                 board[startX][startY] = pieceMoved;
                 Piece rookH8 = getPieceAt(0, 5);
@@ -207,8 +205,8 @@ public class Board {
                 castlingOptions[2] = true;
                 castlingOptions[3] = true;
                 pieceMoved.setPosition(startX, startY);
-                break;
-            case CASTLING_QUEENSIDE_B:
+            }
+            case CASTLING_QUEENSIDE_B -> {
                 board[0][2] = null;
                 board[0][4] = pieceMoved;
                 Piece rookA8 = getPieceAt(0, 3);
@@ -219,9 +217,8 @@ public class Board {
                 castlingOptions[2] = true;
                 castlingOptions[3] = true;
                 pieceMoved.setPosition(0, 4);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown MoveType: " + m.getMoveType().toString());
+            }
+            default -> throw new IllegalArgumentException("Unknown MoveType: " + m.moveType().toString());
         }
         if (turnWhite) {
             fullmove--;
@@ -233,7 +230,7 @@ public class Board {
     public List<Move> allPossibleMoves(boolean checkTest) {
         PieceColor activeColor = turnWhite ? PieceColor.WHITE : PieceColor.BLACK;
         List<Move> moves = new ArrayList<>();
-        List<Piece> filtered = piecesOnTheBoard.stream().filter(p -> p.getPieceColor() == activeColor).collect(Collectors.toList());
+        List<Piece> filtered = piecesOnTheBoard.stream().filter(p -> p.getPieceColor() == activeColor).toList();
 
         for (Piece p : filtered) {
             moves.addAll(availableMovesForPiece(p, checkTest));
@@ -307,7 +304,7 @@ public class Board {
                     if (x == 7 && y == 4 && getPieceAt(7, 1) == null && getPieceAt(7, 2) == null && getPieceAt(7, 3) == null && getPieceAt(7, 0) != null && getPieceAt(7, 0).canCastle()) {
                         moves.add(new Move(x, y, 7, 2, piece, null, CASTLING_QUEENSIDE_W));
                     }
-                } else if (canCastle && !turnWhite) {
+                } else if (canCastle) {
                     if (x == 0 && y == 4 && getPieceAt(0, 5) == null && getPieceAt(0, 6) == null && getPieceAt(0, 7) != null && getPieceAt(0, 7).canCastle()) {
                         moves.add(new Move(x, y, 0, 6, piece, null, CASTLING_KINGSIDE_B));
                     }
@@ -375,7 +372,7 @@ public class Board {
                 }
                 break;
             default:
-                throw new IllegalArgumentException("Unknown piece on " + FENHelper.positionToString(piece.getX(), piece.getY()) + toString() + "!");
+                throw new IllegalArgumentException("Unknown piece on " + FENHelper.positionToString(piece.getX(), piece.getY()));
         }
         return filterMoves(moves, checkTest);
     }
@@ -384,7 +381,7 @@ public class Board {
         // Filter moves by invalid position
         List<Move> movesWithoutWrongCoordinates = new ArrayList<>(moves);
         for (Move m : movesWithoutWrongCoordinates) {
-            int targetX = m.getTargetX(), targetY = m.getTargetY();
+            int targetX = m.targetX(), targetY = m.targetY();
             if (targetX > 7 || targetY > 7 || targetX < 0 || targetY < 0) {
                 moves.remove(m);
             }
@@ -410,7 +407,7 @@ public class Board {
 
         List<Move> allEnemyMoves = allPossibleMoves(false);
         for (Move enemyMove : allEnemyMoves) {
-            Piece pieceCaptured = enemyMove.getPieceTaken();
+            Piece pieceCaptured = enemyMove.pieceTaken();
             if (pieceCaptured != null && pieceCaptured.getPieceType() == PieceType.KING) {
                 return true;
             }
@@ -446,9 +443,9 @@ public class Board {
     }
 
     private void generateInfiniteMoverMoves(List<Move> moves, Piece piece, int x, int y, int[][] directions) {
-        for (int dir = 0; dir < directions.length; dir++) { // Jede Direction durchgehen
+        for (int[] direction : directions) { // Jede Direction durchgehen
             for (int movelength = 1; movelength <= 7; movelength++) { // Jede Movelength durchgehen
-                int[] newPos = {x + directions[dir][0] * movelength, y + directions[dir][1] * movelength};
+                int[] newPos = {x + direction[0] * movelength, y + direction[1] * movelength};
                 Piece pieceOnNewPos = getPieceAt(newPos[0], newPos[1]);
                 if (pieceOnNewPos != null) {
                     PieceColor pieceColorOnNewPos = pieceOnNewPos.getPieceColor();
@@ -458,12 +455,12 @@ public class Board {
                     }
                     // Chessboard.Move trifft auf ein Chessboard.Piece der anderen Farbe
                     if (turnWhite && pieceColorOnNewPos == PieceColor.BLACK || !turnWhite && pieceColorOnNewPos == PieceColor.WHITE) {
-                        moves.add(new Move(x, y, x + directions[dir][0] * movelength, y + directions[dir][1] * movelength, piece, pieceOnNewPos, NORMAL));
+                        moves.add(new Move(x, y, x + direction[0] * movelength, y + direction[1] * movelength, piece, pieceOnNewPos, NORMAL));
                         break;
                     }
                 }
                 // Chessboard.Move trifft auf nichts
-                moves.add(new Move(x, y, x + directions[dir][0] * movelength, y + directions[dir][1] * movelength, piece, null, NORMAL));
+                moves.add(new Move(x, y, x + direction[0] * movelength, y + direction[1] * movelength, piece, null, NORMAL));
             }
         }
     }
@@ -481,16 +478,17 @@ public class Board {
     }
 
     public String toString() {
-        String output = "";
+        StringBuilder output = new StringBuilder();
         for (int j = 0; j < 8; j++) {
-            output += 8 - j + " ";
+            output.append(8 - j).append(" ");
             for (int i = 0; i < 8; i++) {
                 String concate = board[j][i] == null ? " " : board[j][i].toString();
-                output += concate;
+                output.append(concate);
             }
-            output += "\n";
+            output.append("\n");
         }
-        return output += "  abcdefgh";
+        output.append("  abcdefgh");
+        return output.toString();
     }
 
     public Piece[][] getBoard() {

@@ -3,19 +3,14 @@ package Main;
 import Chessboard.Board;
 import Chessboard.FENHelper;
 import Chessboard.Move;
-import Chessboard.Piece;
 import Enums.MoveType;
-import Enums.PieceColor;
-import Enums.PieceType;
-import Evaluation.Evaluator;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 public class Main {
 
     //TODO: Game takes args 'fen' and 'depth', gives move back
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         new ChessAPI().startBackend();
 
         //  Triggers server warning: 1r1qkb1r/ppp1nBpp/8/4PQP1/7P/2N5/PPPB4/2KR2NR b kq - -2 21
@@ -40,10 +35,10 @@ public class Main {
                 b.playMove(m2);
                 for (Move m3 : b.allPossibleMoves(true)) {
                     moveCount += b.allPossibleMoves(true).size();
-                    if (!map.containsKey(m3.getMoveType())) {
-                        map.put(m3.getMoveType(), 1);
+                    if (!map.containsKey(m3.moveType())) {
+                        map.put(m3.moveType(), 1);
                     } else {
-                        map.put(m3.getMoveType(), map.get(m3.getMoveType()) + 1);
+                        map.put(m3.moveType(), map.get(m3.moveType()) + 1);
                     }
                 }
                 b.undoLastMove();
@@ -52,7 +47,7 @@ public class Main {
         }
 
         System.out.println(moveCount);
-        System.out.println(map.toString());
+        System.out.println(map);
     }
 
     public void play50RandomMoves() {
@@ -60,7 +55,7 @@ public class Main {
         Board b = f.toBoard();
         for (int i = 0; i < 50; i++) {
             Move m = b.getRandomMove();
-            System.out.println(m.toString() + " " + m.getMoveType() + " " + m.getPieceMoved().toString() + " " + m.getPieceTaken());
+            System.out.println(m.toString() + " " + m.moveType() + " " + m.pieceMoved().toString() + " " + m.pieceTaken());
             b.playMove(m);
         }
         System.out.println(f.boardToFen(b));

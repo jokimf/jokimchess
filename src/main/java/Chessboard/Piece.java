@@ -1,6 +1,5 @@
 package Chessboard;
 
-import Enums.MoveType;
 import Enums.PieceColor;
 import Enums.PieceType;
 

@@ -8,16 +8,6 @@ public class Evaluation implements Comparable<Evaluation> {
     private PieceColor winner;
     private int mateIn;
 
-    public String toString() {
-        if (winner != null) {
-            return winner.name();
-        }
-        if (mateIn != 0) {
-            return "Mate in: " + Math.abs(mateIn);
-        }
-        return Double.toString(eval);
-    }
-
     public Evaluation(double eval) {
         this.eval = eval;
     }
@@ -113,4 +103,14 @@ public class Evaluation implements Comparable<Evaluation> {
         return mateIn;
     }
 
+
+    public String toString() {
+        if (winner != null) {
+            return winner.name();
+        }
+        if (mateIn != 0) {
+            return "Mate in: " + Math.abs(mateIn);
+        }
+        return Double.toString(eval);
+    }
 }

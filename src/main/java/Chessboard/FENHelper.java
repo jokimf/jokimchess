@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FENHelper {
-    private static final String STANDARDFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+    private static final String STANDARD_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     private final String fen;
     private final List<Piece> piecesOnTheBoard = new ArrayList<>();
 
     public FENHelper() {
-        this(STANDARDFEN);
+        this(STANDARD_FEN);
     }
 
     public FENHelper(String fen) {
@@ -31,10 +31,10 @@ public class FENHelper {
                     }
                     i += skip - 1;
                 } else {
-                    Piece p = new Piece(end, i, pieceSymbol,false);
+                    Piece p = new Piece(end, i, pieceSymbol, false);
                     boolean isWhiteRook = pieceSymbol == 'R', isBlackRook = pieceSymbol == 'r', isWhiteKing = pieceSymbol == 'K', isBlackKing = pieceSymbol == 'k';
 
-                    // Rook castleability
+                    // Rook castle-ability
                     if (castlingOptions[0] && isWhiteRook && end == 7 && i == 7) {
                         p.setCastle(true);
                     } else if (castlingOptions[1] && isWhiteRook && end == 7 && i == 0) {
@@ -45,7 +45,7 @@ public class FENHelper {
                         p.setCastle(true);
                     }
 
-                    // King castleability
+                    // King castle-ability
                     if ((castlingOptions[0] && isWhiteKing && end == 7 && i == 4) || (castlingOptions[1] && isWhiteKing && end == 7 && i == 4)) {
                         p.setCastle(true);
                     } else if (castlingOptions[2] && isBlackKing && end == 0 && i == 4 || castlingOptions[3] && isBlackKing && end == 0 && i == 4) {
@@ -64,58 +64,57 @@ public class FENHelper {
 
     public String boardToFen(Board board) {
         // Chessboard.Board part
-        String fen = "";
+        StringBuilder fen = new StringBuilder();
         for (int row = 0; row < 8; row++) {
             int countOfEmptySpaces = 0;
             for (int index = 0; index < 8; index++) {
-                // Gehe ganzes Chessboard.Board durch
-                // Wenn leer ist, zähle insgesamt freie Stellen
+                // Iterate whole board, if empty, count empty spaces
                 if (board.getBoard()[row][index] == null) {
                     countOfEmptySpaces++;
                 } else {
                     // Chessboard.Piece hit
                     if (countOfEmptySpaces > 0) {
                         // Put number,
-                        fen += countOfEmptySpaces;
+                        fen.append(countOfEmptySpaces);
                         countOfEmptySpaces = 0;
                     }
                     // then piece representation
-                    fen += board.getBoard()[row][index];
+                    fen.append(board.getBoard()[row][index]);
                 }
             }
 
             if (countOfEmptySpaces > 0) {
-                fen += countOfEmptySpaces;
+                fen.append(countOfEmptySpaces);
             }
             // Not row 7 because it's already at the end
             if (row != 7) {
-                fen += "/";
+                fen.append("/");
             }
         }
 
-        fen = board.isTurnWhite() ? fen + " w " : fen + " b ";
+        fen = new StringBuilder(board.isTurnWhite() ? fen + " w " : fen + " b ");
         char[] castlingSymbols = {'K', 'Q', 'k', 'q'};
         boolean[] castlingOptions = board.getCastlingOptions();
         boolean atLeastOne = false;
         for (int i = 0; i < castlingSymbols.length; i++) {
             if (castlingOptions[i]) {
-                fen += castlingSymbols[i];
+                fen.append(castlingSymbols[i]);
                 atLeastOne = true;
             }
         }
         if (!atLeastOne) {
-            fen += "- ";
+            fen.append("- ");
         } else {
-            fen += " ";
+            fen.append(" ");
         }
 
         // En passant square
         int[] enPassantSquare = board.getEnPassantSquare();
-        fen = enPassantSquare != null ? positionToString(board.getEnPassantSquare()[0], board.getEnPassantSquare()[1]) + " " : fen + "- ";
+        fen = new StringBuilder(enPassantSquare != null ? positionToString(board.getEnPassantSquare()[0], board.getEnPassantSquare()[1]) + " " : fen + "- ");
 
         // Chessboard.Move counts
-        fen += board.getHalfmove() + " " + board.getFullmove();
-        return fen;
+        fen.append(board.getHalfmove()).append(" ").append(board.getFullmove());
+        return fen.toString();
     }
 
     public static String positionToString(int x, int y) {

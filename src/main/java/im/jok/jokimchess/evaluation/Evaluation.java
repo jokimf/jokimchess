@@ -1,6 +1,6 @@
-package Evaluation;
+package im.jok.jokimchess.evaluation;
 
-import Enums.PieceColor;
+import im.jok.jokimchess.chessboard.PieceColor;
 import org.jetbrains.annotations.NotNull;
 
 public class Evaluation implements Comparable<Evaluation> {

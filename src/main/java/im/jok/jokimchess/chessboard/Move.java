@@ -1,6 +1,4 @@
-package Chessboard;
-
-import Enums.MoveType;
+package im.jok.jokimchess.chessboard;
 
 public record Move(int startX, int startY, int targetX, int targetY, Piece pieceMoved, Piece pieceTaken,
                    MoveType moveType) {

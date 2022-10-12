@@ -1,4 +1,4 @@
-package Chessboard;
+package im.jok.jokimchess.chessboard;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,9 +1,9 @@
-package Main;
+package im.jok.jokimchess;
 
-import Chessboard.Board;
-import Chessboard.FENHelper;
-import Chessboard.Move;
-import Enums.MoveType;
+import im.jok.jokimchess.chessboard.Board;
+import im.jok.jokimchess.chessboard.FENHelper;
+import im.jok.jokimchess.chessboard.Move;
+import im.jok.jokimchess.chessboard.MoveType;
 
 import java.util.HashMap;
 

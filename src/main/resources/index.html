@@ -157,12 +157,10 @@
         responsePromise.then(response => {
             response.text().then(backendFen => {
                 fen = backendFen;
-                //updateLegalMoves();
                 drawPieces(false);
                 playBotMove();
             });
         });
-
     }
 
     function updateLegalMoves() {

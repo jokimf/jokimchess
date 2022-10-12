@@ -1,10 +1,10 @@
-package Evaluation;
+package im.jok.jokimchess.evaluation;
 
-import Chessboard.Board;
-import Chessboard.Move;
-import Chessboard.Piece;
-import Enums.GameState;
-import Enums.PieceColor;
+import im.jok.jokimchess.chessboard.Board;
+import im.jok.jokimchess.chessboard.Move;
+import im.jok.jokimchess.chessboard.Piece;
+import im.jok.jokimchess.chessboard.GameState;
+import im.jok.jokimchess.chessboard.PieceColor;
 
 public class Evaluator {
 
@@ -62,7 +62,7 @@ public class Evaluator {
             }
 
             // Add or subtract from total value depending on PieceColor
-            if (p.getPieceColor() == Enums.PieceColor.BLACK) {
+            if (p.getPieceColor() == PieceColor.BLACK) {
                 value = -value;
             }
             sum += value;
@@ -82,7 +82,7 @@ public class Evaluator {
 
                 if (isMax) {
                     EvaluationResult max = null;
-                    for (Chessboard.Move m : b.allPossibleMoves(true)) {
+                    for (Move m : b.allPossibleMoves(true)) {
                         b.playMove(m);
                         EvaluationResult eval = minimax(b, depth - 1, false);
                         b.undoLastMove();
@@ -93,7 +93,7 @@ public class Evaluator {
                     return new EvaluationResult(max.eval().getOneMoveLater(), max.move());
                 } else {
                     EvaluationResult min = null;
-                    for (Chessboard.Move m : b.allPossibleMoves(true)) {
+                    for (Move m : b.allPossibleMoves(true)) {
                         b.playMove(m);
                         EvaluationResult eval = minimax(b, depth - 1, true);
                         b.undoLastMove();

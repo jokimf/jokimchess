@@ -1,15 +1,15 @@
-package Main;
+package im.jok.jokimchess;
 
-import Chessboard.Board;
-import Chessboard.FENHelper;
-import Chessboard.Move;
-import Chessboard.Piece;
-import Enums.MoveType;
-import Enums.PieceColor;
-import Enums.PieceType;
-import Evaluation.Evaluator;
+import im.jok.jokimchess.chessboard.Board;
+import im.jok.jokimchess.chessboard.FENHelper;
+import im.jok.jokimchess.chessboard.Move;
+import im.jok.jokimchess.chessboard.Piece;
+import im.jok.jokimchess.chessboard.MoveType;
+import im.jok.jokimchess.chessboard.PieceColor;
+import im.jok.jokimchess.chessboard.PieceType;
+import im.jok.jokimchess.evaluation.Evaluator;
 import io.javalin.Javalin;
-import io.javalin.core.JavalinConfig;
+import io.javalin.plugin.bundled.CorsPluginConfig;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -22,7 +22,11 @@ public class ChessAPI {
 
     public void startBackend() {
         // http://localhost:7001/chess/eval?fen=1rb2rk1/p1qnbppp/B7/2ppP3/3P4/4QN2/1Pn2PPP/R1B2RK1 w - - 0 15
-        Javalin app = Javalin.create(JavalinConfig::enableCorsForAllOrigins).start(7001);
+        Javalin app = Javalin.create(javalinConfig -> {
+            javalinConfig.plugins.enableCors(corsContainer -> {
+                corsContainer.add(CorsPluginConfig::anyHost);
+            });
+        }).start(7001);
         app.get("/chess", ctx -> {
             String site = new String(Files.readAllBytes(Path.of("src/main/resources/index.html")));
             ctx.status(200);
@@ -57,7 +61,7 @@ public class ChessAPI {
             Map<String, Object> json = new HashMap<>();
             json.put("fen", new FENHelper().boardToFen(b));
             json.put("move", bestMove);
-            json.put("eval",e.evaluate_single_board(b));
+            json.put("eval", e.evaluate_single_board(b));
             ctx.status(200);
             ctx.json(json);
         });

@@ -1,7 +1,4 @@
-package Chessboard;
-
-import Enums.PieceColor;
-import Enums.PieceType;
+package im.jok.jokimchess.chessboard;
 
 public class Piece {
     private final PieceType pieceType;

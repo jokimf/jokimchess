@@ -1,12 +1,8 @@
-package Chessboard;
-
-import Enums.GameState;
-import Enums.PieceColor;
-import Enums.PieceType;
+package im.jok.jokimchess.chessboard;
 
 import java.util.*;
 
-import static Enums.MoveType.*;
+import static im.jok.jokimchess.chessboard.MoveType.*;
 
 public class Board {
     public final Piece[][] board;
@@ -38,6 +34,7 @@ public class Board {
         // TODO: King loses castling rights on move
         // TODO: allPiecesOnTheBoard refresh on capture
         // TODO: castling options fix
+
         switch (m.moveType()) {
             case NORMAL -> {
                 board[targetX][targetY] = piece;
@@ -62,7 +59,6 @@ public class Board {
                 board[enPassantSquare[0] - 1][enPassantSquare[1]] = null;
             }
             case PROMOTION_W, PROMOTION_B -> {
-                System.out.println(pieceTaken);
                 if (pieceTaken != null) {
                     piecesOnTheBoard.remove(pieceTaken);
                 }
@@ -218,7 +214,8 @@ public class Board {
                 castlingOptions[3] = true;
                 pieceMoved.setPosition(0, 4);
             }
-            default -> throw new IllegalArgumentException("Unknown MoveType: " + m.moveType().toString());
+            default ->
+                    throw new IllegalArgumentException("Unknown MoveType: " + m.moveType().toString());
         }
         if (turnWhite) {
             fullmove--;

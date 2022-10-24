@@ -4,12 +4,12 @@ import im.jok.jokimchess.chessboard.PieceColor;
 import org.jetbrains.annotations.NotNull;
 
 public class Evaluation implements Comparable<Evaluation> {
-    private float eval;
+    private float evalNumber;
     private PieceColor winner;
     private int mateIn;
 
-    public Evaluation(float eval) {
-        this.eval = eval;
+    public Evaluation(float evalNumber) {
+        this.evalNumber = evalNumber;
     }
 
     public Evaluation(int mateIn) {
@@ -38,6 +38,9 @@ public class Evaluation implements Comparable<Evaluation> {
 
     @Override
     public int compareTo(@NotNull Evaluation otherEval) {
+        if (mateIn == 0 && otherEval.mateIn == 0) {
+            return Float.compare(evalNumber, otherEval.evalNumber);
+        }
         if (winner == PieceColor.WHITE) {
             if (otherEval.winner == PieceColor.WHITE) {
                 return 0;
@@ -59,10 +62,6 @@ public class Evaluation implements Comparable<Evaluation> {
         }
         if (otherEval.winner == PieceColor.BLACK) {
             return 1;
-        }
-
-        if (mateIn == 0 && otherEval.mateIn == 0) {
-            return Float.compare(eval, otherEval.eval);
         }
         if (mateIn > 0 && otherEval.mateIn > 0) {
             if (mateIn > otherEval.mateIn) {
@@ -91,8 +90,8 @@ public class Evaluation implements Comparable<Evaluation> {
         return Integer.compare(mateIn, otherEval.mateIn);
     }
 
-    public float getEval() {
-        return eval;
+    public float getEvalNumber() {
+        return evalNumber;
     }
 
     public PieceColor getWinner() {
@@ -111,6 +110,6 @@ public class Evaluation implements Comparable<Evaluation> {
         if (mateIn != 0) {
             return "Mate in: " + Math.abs(mateIn);
         }
-        return Float.toString(eval);
+        return Float.toString(evalNumber);
     }
 }

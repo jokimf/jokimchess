@@ -26,45 +26,45 @@ public class Evaluator {
             {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0}
     };
-    private static final float[][] whiteBishopMap = {
-            {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f},
-            {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f},
-            {0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f},
+    private static final float[][] whiteBishopMap = { // done
             {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f},
-            {0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f},
-            {0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0}
+            {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f},
+            {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.15f},
+            {0.1f, 0.1f, 0.1f, 0.15f, 0.1f, 0.1f, 0.15f, 0.1f},
+            {0.05f, 0.05f, 0.3f, 0.05f, 0.05f, 0.3f, 0.05f, 0.05f},
+            {0.05f, 0.1f, 0.05f, 0.45f, 0.45f, 0.05f, 0.1f, 0.05f},
+            {0, 0.5f, 0, 0.4f, 0.4f, 0, 0.5f, 0},
+            {0, 0, 0.2f, 0, 0, 0.2f, 0, 0}
     };
-    private static final float[][] whiteRookMap = {
-            {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f},
-            {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f},
-            {0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f},
-            {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f},
-            {0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f},
-            {0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f},
+    private static final float[][] whiteRookMap = {//done
             {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0}
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0.1f, 0, 0, 0, 0},
+            {0.2f, 0.05f, 0.6f, 0.7f, 0.7f, 0.6f, 0.05f, 0.2f}
     };
-    private static final float[][] whiteQueenMap = {
-            {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f},
-            {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f},
-            {0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f},
-            {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f},
-            {0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f},
-            {0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f},
+    private static final float[][] whiteQueenMap = {//done
             {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0}
+            {0, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0},
+            {0, 0.4f, 0.5f, 0.5f, 0.5f, 0.5f, 0.4f, 0},
+            {0, 0.4f, 0.5f, 0.8f, 0.8f, 0.5f, 0.4f, 0},
+            {0, 0.4f, 0.5f, 0.8f, 0.8f, 0.5f, 0.4f, 0},
+            {0, 0.4f, 0.5f, 0.5f, 0.5f, 0.5f, 0.4f, 0},
+            {0, 0.4f, 0.4f, 0.45f, 0.45f, 0.4f, 0, 0},
+            {0, 0, 0.1f, 0.2f, 0.1f, 0, 0, 0}
     };
     private static final float[][] whiteKingMap = {
-            {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f},
-            {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f},
-            {0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f, 0.15f},
-            {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f},
-            {0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f, 0.05f},
-            {0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f, 0.025f},
             {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0}
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0.35f, 0.8f, 0.7f, 0, 0, 0, 0.8f, 0.35f}
     };
 
     //BLACK
@@ -88,55 +88,54 @@ public class Evaluator {
             {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f},
             {0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f}
     };
-    private static final float[][] blackBishopMap = {
+    private static final float[][] blackBishopMap = { // done
+            {0, 0, 0.2f, 0, 0, 0.2f, 0, 0},
+            {0, 0.5f, 0, 0.4f, 0.4f, 0, 0.5f, 0},
+            {0.05f, 0.1f, 0.05f, 0.45f, 0.45f, 0.05f, 0.1f, 0.05f},
+            {0.05f, 0.05f, 0.3f, 0.05f, 0.05f, 0.3f, 0.05f, 0.05f},
+            {0.1f, 0.1f, 0.1f, 0.15f, 0.1f, 0.1f, 0.15f, 0.1f},
+            {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.15f},
+            {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f},
+            {0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f, 0.1f}
+    };
+    private static final float[][] blackRookMap = { // done
+            {0.2f, 0.05f, 0.6f, 0.7f, 0.7f, 0.6f, 0.05f, 0.2f},
+            {0, 0, 0, 0.1f, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0.5f, 0.5f, 0.5f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.8f, 0.8f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.8f, 0.8f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.5f, 0.5f, 0.5f, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0}
     };
-    private static final float[][] blackRookMap = {
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0.5f, 0.5f, 0.5f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.8f, 0.8f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.8f, 0.8f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.5f, 0.5f, 0.5f, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0}
-    };
-    private static final float[][] blackQueenMap = {
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0.5f, 0.5f, 0.5f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.8f, 0.8f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.8f, 0.8f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.5f, 0.5f, 0.5f, 0, 0},
-            {0, 0, 0, 0, 0, 0, 0, 0},
+    private static final float[][] blackQueenMap = {//done
+            {0, 0, 0.1f, 0.2f, 0.1f, 0, 0, 0},
+            {0, 0.4f, 0.4f, 0.45f, 0.45f, 0.4f, 0, 0},
+            {0, 0.4f, 0.5f, 0.5f, 0.5f, 0.5f, 0.4f, 0},
+            {0, 0.4f, 0.5f, 0.8f, 0.8f, 0.5f, 0.4f, 0},
+            {0, 0.4f, 0.5f, 0.8f, 0.8f, 0.5f, 0.4f, 0},
+            {0, 0.4f, 0.5f, 0.5f, 0.5f, 0.5f, 0.4f, 0},
+            {0, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0.4f, 0},
             {0, 0, 0, 0, 0, 0, 0, 0}
     };
     private static final float[][] blackKingMap = {
+            {0.35f, 0.8f, 0.7f, 0, 0, 0, 0.8f, 0.35f},
             {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
-            {0, 0, 0.5f, 0.5f, 0.5f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.8f, 0.8f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.8f, 0.8f, 0.5f, 0, 0},
-            {0, 0, 0.5f, 0.5f, 0.5f, 0.5f, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0}
     };
 
-    public Move determineBestMove(Board b) {
-        EvaluationResult e = alphabeta(b, 3, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, b.isTurnWhite());
-        return e.move();
+    public EvaluationResult determineBestEvaluationResult(Board board, int depth) {
+        return alphabeta(board, depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, board.isTurnWhite());
     }
 
     public float evaluate_single_board(Board b) {
         float sum = 0;
-        int fullmoves = b.getFullmove();
+        int fullmoves = b.getFullmove(); //TODO: determine early/mid/end by piece count, not fullmoves
 
         for (Piece p : b.getPiecesOnTheBoard()) {
             int x = p.getX(), y = p.getY();
@@ -170,13 +169,9 @@ public class Evaluator {
                 }
             }
 
-            // Add or subtract from total value depending on PieceColor
-            if (color == PieceColor.BLACK) {
-                boardValue = -boardValue;
-            }
-            sum += boardValue;
+            sum += (color == PieceColor.WHITE ? boardValue : -boardValue);
         }
-        //TODO: Points for bishop pair, more space, etc
+        //TODO: Points for bishop pair, more space, doubled rooks, alekhine gun, etc
         return sum;
     }
 
@@ -198,10 +193,11 @@ public class Evaluator {
                         if (max == null || eval.eval().compareTo(max.eval()) > 0) {
                             max = new EvaluationResult(eval.eval(), m);
                         }
-                        if (max.eval().getEval() >= beta) { // TODO: Use compareTo
+                        //if (max.eval().getEval() >= beta) {
+                        if (max.eval().compareTo(new Evaluation(beta)) > 0) {
                             break;
                         }
-                        alpha = Math.max(alpha, max.eval().getEval());
+                        alpha = Math.max(alpha, max.eval().getEvalNumber());
                     }
                     return new EvaluationResult(max.eval().getOneMoveLater(), max.move());
                 } else {
@@ -213,10 +209,10 @@ public class Evaluator {
                         if (min == null || eval.eval().compareTo(min.eval()) < 0) {
                             min = new EvaluationResult(eval.eval(), m);
                         }
-                        if (min.eval().getEval() <= alpha) { // TODO: Use compareTo
+                        if (min.eval().compareTo(new Evaluation(alpha)) < 0) {
                             break;
                         }
-                        beta = Math.max(beta, min.eval().getEval());
+                        beta = Math.max(beta, min.eval().getEvalNumber());
                     }
                     return new EvaluationResult(min.eval().getOneMoveLater(), min.move());
                 }

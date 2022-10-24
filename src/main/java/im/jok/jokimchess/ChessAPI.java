@@ -7,6 +7,7 @@ import im.jok.jokimchess.chessboard.Piece;
 import im.jok.jokimchess.chessboard.MoveType;
 import im.jok.jokimchess.chessboard.PieceColor;
 import im.jok.jokimchess.chessboard.PieceType;
+import im.jok.jokimchess.evaluation.EvaluationResult;
 import im.jok.jokimchess.evaluation.Evaluator;
 import io.javalin.Javalin;
 import io.javalin.plugin.bundled.CorsPluginConfig;
@@ -19,15 +20,15 @@ import java.util.Map;
 
 public class ChessAPI {
     private static final Evaluator e = new Evaluator();
+    private static final int DEPTH = 3;
 
     public void startBackend() {
         // http://localhost:7001/chess/eval?fen=1rb2rk1/p1qnbppp/B7/2ppP3/3P4/4QN2/1Pn2PPP/R1B2RK1 w - - 0 15
         Javalin app = Javalin.create(
                 javalinConfig -> javalinConfig.plugins.enableCors(corsContainer -> corsContainer.add(CorsPluginConfig::anyHost))).start(7001);
         app.get("/chess", ctx -> {
-            String site = new String(Files.readAllBytes(Path.of("src/main/resources/index.html")));
             ctx.status(200);
-            ctx.html(site);
+            ctx.html(new String(Files.readAllBytes(Path.of("src/main/resources/index.html"))));
         });
 
         app.get("/chess/moves", ctx -> {
@@ -52,13 +53,14 @@ public class ChessAPI {
 
         app.get("/chess/bot", ctx -> {
             Board b = new FENHelper(ctx.queryParam("fen")).toBoard();
-            Move bestMove = e.determineBestMove(b);
+            EvaluationResult bestEvaluationResult = e.determineBestEvaluationResult(b, DEPTH);
+            Move bestMove = bestEvaluationResult.move();
             b.playMove(bestMove);
 
             Map<String, Object> json = new HashMap<>();
             json.put("fen", new FENHelper().boardToFen(b));
             json.put("move", bestMove);
-            json.put("eval", e.evaluate_single_board(b));
+            json.put("eval", bestEvaluationResult.eval());
             ctx.status(200);
             ctx.json(json);
         });

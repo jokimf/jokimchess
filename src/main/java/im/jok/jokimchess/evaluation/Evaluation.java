@@ -4,11 +4,11 @@ import im.jok.jokimchess.chessboard.PieceColor;
 import org.jetbrains.annotations.NotNull;
 
 public class Evaluation implements Comparable<Evaluation> {
-    private double eval;
+    private float eval;
     private PieceColor winner;
     private int mateIn;
 
-    public Evaluation(double eval) {
+    public Evaluation(float eval) {
         this.eval = eval;
     }
 
@@ -62,7 +62,7 @@ public class Evaluation implements Comparable<Evaluation> {
         }
 
         if (mateIn == 0 && otherEval.mateIn == 0) {
-            return Double.compare(eval, otherEval.eval);
+            return Float.compare(eval, otherEval.eval);
         }
         if (mateIn > 0 && otherEval.mateIn > 0) {
             if (mateIn > otherEval.mateIn) {
@@ -91,7 +91,7 @@ public class Evaluation implements Comparable<Evaluation> {
         return Integer.compare(mateIn, otherEval.mateIn);
     }
 
-    public double getEval() {
+    public float getEval() {
         return eval;
     }
 
@@ -111,6 +111,6 @@ public class Evaluation implements Comparable<Evaluation> {
         if (mateIn != 0) {
             return "Mate in: " + Math.abs(mateIn);
         }
-        return Double.toString(eval);
+        return Float.toString(eval);
     }
 }

@@ -4,6 +4,7 @@ import im.jok.jokimchess.chessboard.Board;
 import im.jok.jokimchess.chessboard.FENHelper;
 import im.jok.jokimchess.chessboard.Move;
 import im.jok.jokimchess.chessboard.MoveType;
+import im.jok.jokimchess.evaluation.Evaluator;
 
 import java.util.HashMap;
 
@@ -12,7 +13,8 @@ public class Main {
     //TODO: Game takes args 'fen' and 'depth', gives move back
     public static void main(String[] args) {
         new ChessAPI().startBackend();
-
+        Board b = new FENHelper().toBoard();
+        System.out.println(new Evaluator().evaluate_single_board(b));
         //  Triggers server warning: 1r1qkb1r/ppp1nBpp/8/4PQP1/7P/2N5/PPPB4/2KR2NR b kq - -2 21
 
 //        FENHelper f5 = new FENHelper();

@@ -22,11 +22,8 @@ public class ChessAPI {
 
     public void startBackend() {
         // http://localhost:7001/chess/eval?fen=1rb2rk1/p1qnbppp/B7/2ppP3/3P4/4QN2/1Pn2PPP/R1B2RK1 w - - 0 15
-        Javalin app = Javalin.create(javalinConfig -> {
-            javalinConfig.plugins.enableCors(corsContainer -> {
-                corsContainer.add(CorsPluginConfig::anyHost);
-            });
-        }).start(7001);
+        Javalin app = Javalin.create(
+                javalinConfig -> javalinConfig.plugins.enableCors(corsContainer -> corsContainer.add(CorsPluginConfig::anyHost))).start(7001);
         app.get("/chess", ctx -> {
             String site = new String(Files.readAllBytes(Path.of("src/main/resources/index.html")));
             ctx.status(200);
@@ -64,15 +61,6 @@ public class ChessAPI {
             json.put("eval", e.evaluate_single_board(b));
             ctx.status(200);
             ctx.json(json);
-        });
-
-        // Not important for frontend
-        app.get("/chess/eval", ctx -> {
-            String fen = ctx.queryParam("fen");
-            Move bestMove = e.determineBestMove(new FENHelper(fen).toBoard());
-            String bestMoveString = bestMove == null ? "null" : bestMove.toString();
-            ctx.status(200);
-            ctx.result(bestMoveString);
         });
     }
 }

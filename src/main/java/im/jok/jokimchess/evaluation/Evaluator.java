@@ -2,6 +2,9 @@ package im.jok.jokimchess.evaluation;
 
 import im.jok.jokimchess.chessboard.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Evaluator {
 
     // Position Heatmaps
@@ -175,11 +178,11 @@ public class Evaluator {
         return sum;
     }
 
-    public EvaluationResult alphabeta(Board b, int depth, float alpha, float beta, boolean isMax) {
-        GameState g = b.determineGameState();
-        switch (g) {
+    public List<EvaluationResult> moves = new ArrayList<>();
+
+    private EvaluationResult alphabeta(Board b, int depth, float alpha, float beta, boolean isMax) {
+        switch (b.determineGameState()) {
             case ONGOING -> {
-                // Recursion Base Case
                 if (depth == 0) {
                     return new EvaluationResult(new Evaluation(evaluate_single_board(b)), null);
                 }
@@ -187,12 +190,21 @@ public class Evaluator {
                 if (isMax) {
                     EvaluationResult max = null;
                     for (Move m : b.allPossibleMoves(true)) {
+
+                        // Try move
                         b.playMove(m);
-                        EvaluationResult eval = alphabeta(b, depth - 1, alpha, beta, false);
+                        EvaluationResult evaluationResult = alphabeta(b, depth - 1, alpha, beta, false);
                         b.undoLastMove();
-                        if (max == null || eval.eval().compareTo(max.eval()) > 0) {
-                            max = new EvaluationResult(eval.eval(), m);
+                        if (depth == 3) {
+                            moves.add(new EvaluationResult(evaluationResult.eval(), m));
                         }
+
+                        // Save if move was better than last max
+                        if (max == null || evaluationResult.eval().compareTo(max.eval()) >= 0) {
+                            max = new EvaluationResult(evaluationResult.eval(), m);
+                        }
+
+                        // Alphabeta Pruning
                         //if (max.eval().getEval() >= beta) {
                         if (max.eval().compareTo(new Evaluation(beta)) > 0) {
                             break;
@@ -206,10 +218,13 @@ public class Evaluator {
                         b.playMove(m);
                         EvaluationResult eval = alphabeta(b, depth - 1, alpha, beta, true);
                         b.undoLastMove();
+                        if (depth == 3) {
+                            moves.add(new EvaluationResult(eval.eval(), m));
+                        }
                         if (min == null || eval.eval().compareTo(min.eval()) < 0) {
                             min = new EvaluationResult(eval.eval(), m);
                         }
-                        if (min.eval().compareTo(new Evaluation(alpha)) < 0) {
+                        if (min.eval().compareTo(new Evaluation(alpha)) <= 0) {
                             break;
                         }
                         beta = Math.max(beta, min.eval().getEvalNumber());

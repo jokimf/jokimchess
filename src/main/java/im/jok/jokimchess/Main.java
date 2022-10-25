@@ -1,28 +1,34 @@
 package im.jok.jokimchess;
 
-import im.jok.jokimchess.chessboard.Board;
-import im.jok.jokimchess.chessboard.FENHelper;
-import im.jok.jokimchess.chessboard.Move;
-import im.jok.jokimchess.chessboard.MoveType;
+import im.jok.jokimchess.chessboard.*;
+import im.jok.jokimchess.evaluation.Evaluation;
+import im.jok.jokimchess.evaluation.EvaluationResult;
 import im.jok.jokimchess.evaluation.Evaluator;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 public class Main {
 
     //TODO: Game takes args 'fen' and 'depth', gives move back
     public static void main(String[] args) {
-        new ChessAPI().startBackend();
-        Board b = new FENHelper("r5nk/p7/Pp1p3b/1B2p1pQ/1P2P2P/5p1q/1BP2P2/R4RK1 w - - 0 29").toBoard();
-        System.out.println(new Evaluator().evaluate_single_board(b));
+        //new ChessAPI().startBackend();
         //  Triggers server warning: 1r1qkb1r/ppp1nBpp/8/4PQP1/7P/2N5/PPPB4/2KR2NR b kq - -2 21
 
-//        FENHelper f5 = new FENHelper();
-//        Board b5 = f5.fenToBoard();
-//        Evaluator e = new Evaluator();
-//        EvaluationResult result = e.minimax(b5, 2, true);
-//        System.out.println(result.getMove().toString());
-//        System.out.println(result.getEval());
+        Board b = new FENHelper("1k6/8/1K1R4/8/8/8/8/8 w - - 0 1").toBoard();
+        Evaluator e = new Evaluator();
+        e.determineBestEvaluationResult(b, 3);
+        e.moves.sort(Comparator.comparing(EvaluationResult::eval));
+        System.out.println(e.moves);
+    }
+
+    public void printmoves() {
+        Board b = new FENHelper("1k6/8/1K1R4/8/8/8/8/8 w - - 0 1").toBoard();
+        Evaluator e = new Evaluator();
+        e.determineBestEvaluationResult(b, 3);
+        e.moves.sort(Comparator.comparing(EvaluationResult::eval));
+        System.out.println(e.moves);
     }
 
     //TODO Movecount check
@@ -53,11 +59,11 @@ public class Main {
     }
 
     // TODO King check fix
-    public void kingCheckCheck() {
+    public static void kingCheckCheck() {
         FENHelper f5 = new FENHelper("rnbqkbnr/2pppppp/5N2/8/pp1P4/8/PPP1PPPP/RNBQKB1R b KQkq - 1 5");
         Board b5 = f5.toBoard();
         System.out.println(b5.toString());
-        System.out.println(b5.isKingInCheck());
+        System.out.println(b5.isKingInCheck(true));
     }
 
     // TODO King castle out of danger

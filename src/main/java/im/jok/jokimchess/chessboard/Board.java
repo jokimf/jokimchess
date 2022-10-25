@@ -390,7 +390,7 @@ public class Board {
             List<Move> iterMoves = new ArrayList<>(moves);
             for (Move m : iterMoves) {
                 playMove(m);
-                if (isKingInCheck()) {
+                if (isKingInCheck(false)) {
                     moves.remove(m);
                 }
                 undoLastMove();
@@ -399,10 +399,17 @@ public class Board {
         return moves;
     }
 
-    public boolean isKingInCheck() {
+    public boolean isKingInCheck(boolean magic) {
         //TODO: Use iterators instead of copying lists
+        List<Move> allEnemyMoves;
+        if (magic) {
+            turnWhite = !turnWhite;
+            allEnemyMoves = allPossibleMoves(false);
+            turnWhite = !turnWhite;
+        } else {
+            allEnemyMoves = allPossibleMoves(false);
+        }
 
-        List<Move> allEnemyMoves = allPossibleMoves(false);
         for (Move enemyMove : allEnemyMoves) {
             Piece pieceCaptured = enemyMove.pieceTaken();
             if (pieceCaptured != null && pieceCaptured.getPieceType() == PieceType.KING) {
@@ -416,14 +423,15 @@ public class Board {
         if (halfmove >= 50) {
             return GameState.DRAW_BY_50_MOVE_RULE;
         }
-        if (allPossibleMoves(true).isEmpty()) {
+        var possibleMoves = allPossibleMoves(true);
+        if (possibleMoves.isEmpty()) {
             if (turnWhite) {
-                if (!isKingInCheck()) {
+                if (!isKingInCheck(true)) {
                     return GameState.STALEMATE;
                 }
                 return GameState.BLACK_WINS;
             } else {
-                if (!isKingInCheck()) {
+                if (!isKingInCheck(true)) {
                     return GameState.STALEMATE;
                 }
                 return GameState.WHITE_WINS;

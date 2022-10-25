@@ -54,13 +54,14 @@ public class ChessAPI {
         app.get("/chess/bot", ctx -> {
             Board b = new FENHelper(ctx.queryParam("fen")).toBoard();
             EvaluationResult bestEvaluationResult = e.determineBestEvaluationResult(b, DEPTH);
+            System.out.println(e.moves);
             Move bestMove = bestEvaluationResult.move();
             b.playMove(bestMove);
 
             Map<String, Object> json = new HashMap<>();
             json.put("fen", new FENHelper().boardToFen(b));
             json.put("move", bestMove);
-            json.put("eval", bestEvaluationResult.eval());
+            json.put("eval", bestEvaluationResult.eval().getEvalNumber());
             ctx.status(200);
             ctx.json(json);
         });

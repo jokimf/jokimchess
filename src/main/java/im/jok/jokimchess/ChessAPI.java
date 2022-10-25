@@ -61,7 +61,7 @@ public class ChessAPI {
             Map<String, Object> json = new HashMap<>();
             json.put("fen", new FENHelper().boardToFen(b));
             json.put("move", bestMove);
-            json.put("eval", bestEvaluationResult.eval().getEvalNumber());
+            json.put("eval", bestEvaluationResult.eval().toString());
             ctx.status(200);
             ctx.json(json);
         });

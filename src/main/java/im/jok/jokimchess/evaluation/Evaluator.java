@@ -133,7 +133,7 @@ public class Evaluator {
     };
 
     public EvaluationResult determineBestEvaluationResult(Board board, int depth) {
-        return alphabeta(board, depth, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, board.isTurnWhite());
+        return alphabeta(board, depth, new Evaluation(PieceColor.BLACK), new Evaluation(PieceColor.WHITE), board.isTurnWhite());
     }
 
     public float evaluate_single_board(Board b) {
@@ -180,7 +180,7 @@ public class Evaluator {
 
     public List<EvaluationResult> moves = new ArrayList<>();
 
-    private EvaluationResult alphabeta(Board b, int depth, float alpha, float beta, boolean isMax) {
+    private EvaluationResult alphabeta(Board b, int depth, Evaluation alpha, Evaluation beta, boolean isMax) {
         switch (b.determineGameState()) {
             case ONGOING -> {
                 if (depth == 0) {
@@ -190,26 +190,21 @@ public class Evaluator {
                 if (isMax) {
                     EvaluationResult max = null;
                     for (Move m : b.allPossibleMoves(true)) {
-
-                        // Try move
                         b.playMove(m);
                         EvaluationResult evaluationResult = alphabeta(b, depth - 1, alpha, beta, false);
                         b.undoLastMove();
                         if (depth == 3) {
                             moves.add(new EvaluationResult(evaluationResult.eval(), m));
                         }
-
-                        // Save if move was better than last max
-                        if (max == null || evaluationResult.eval().compareTo(max.eval()) >= 0) {
+                        if (max == null || evaluationResult.eval().compareTo(max.eval()) > 0) {
                             max = new EvaluationResult(evaluationResult.eval(), m);
                         }
-
-                        // Alphabeta Pruning
-                        //if (max.eval().getEval() >= beta) {
-                        if (max.eval().compareTo(new Evaluation(beta)) > 0) {
+                        if (max.eval().compareTo(beta) >= 0) {
                             break;
                         }
-                        alpha = Math.max(alpha, max.eval().getEvalNumber());
+                        if (alpha.compareTo(max.eval()) <= 0) {
+                            alpha = max.eval();
+                        }
                     }
                     return new EvaluationResult(max.eval().getOneMoveLater(), max.move());
                 } else {
@@ -224,10 +219,12 @@ public class Evaluator {
                         if (min == null || eval.eval().compareTo(min.eval()) < 0) {
                             min = new EvaluationResult(eval.eval(), m);
                         }
-                        if (min.eval().compareTo(new Evaluation(alpha)) <= 0) {
+                        if (min.eval().compareTo(alpha) <= 0) {
                             break;
                         }
-                        beta = Math.max(beta, min.eval().getEvalNumber());
+                        if (beta.compareTo(min.eval()) >= 0) {
+                            beta = min.eval();
+                        }
                     }
                     return new EvaluationResult(min.eval().getOneMoveLater(), min.move());
                 }

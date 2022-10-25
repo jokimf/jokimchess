@@ -1,11 +1,12 @@
 package im.jok.jokimchess;
 
-import im.jok.jokimchess.chessboard.*;
-import im.jok.jokimchess.evaluation.Evaluation;
+import im.jok.jokimchess.chessboard.Board;
+import im.jok.jokimchess.chessboard.FENHelper;
+import im.jok.jokimchess.chessboard.Move;
+import im.jok.jokimchess.chessboard.MoveType;
 import im.jok.jokimchess.evaluation.EvaluationResult;
 import im.jok.jokimchess.evaluation.Evaluator;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 
@@ -13,14 +14,9 @@ public class Main {
 
     //TODO: Game takes args 'fen' and 'depth', gives move back
     public static void main(String[] args) {
-        //new ChessAPI().startBackend();
+        new ChessAPI().startBackend();
         //  Triggers server warning: 1r1qkb1r/ppp1nBpp/8/4PQP1/7P/2N5/PPPB4/2KR2NR b kq - -2 21
-
-        Board b = new FENHelper("1k6/8/1K1R4/8/8/8/8/8 w - - 0 1").toBoard();
-        Evaluator e = new Evaluator();
-        e.determineBestEvaluationResult(b, 3);
-        e.moves.sort(Comparator.comparing(EvaluationResult::eval));
-        System.out.println(e.moves);
+        //r1b1k2r/1ppp2pp/1n2p3/p3Ppq1/1bPN4/2N5/PPQ1BPPP/R4RK1 b kq - -2 11
     }
 
     public void printmoves() {

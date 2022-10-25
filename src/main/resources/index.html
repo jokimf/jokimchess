@@ -180,7 +180,7 @@
                 console.log(backendFen);
                 fen = backendFen['fen'];
                 let last_bot_move = backendFen['move'];
-                document.getElementById('eval').textContent = parseFloat(backendFen['eval']).toFixed(2);
+                document.getElementById('eval').textContent = isNaN(parseFloat(backendFen['eval'])) ? backendFen['eval'].toString() : parseFloat(backendFen['eval']).toFixed(2);
                 highlightSquare(last_bot_move.startX, last_bot_move.startY, last_bot_move.targetX, last_bot_move.targetY);
                 playerTurn = !playerTurn;
                 drawPieces(false);

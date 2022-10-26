@@ -2,9 +2,6 @@ package im.jok.jokimchess.evaluation;
 
 import im.jok.jokimchess.chessboard.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Evaluator {
 
     // Position Heatmaps
@@ -178,8 +175,6 @@ public class Evaluator {
         return sum;
     }
 
-    public List<EvaluationResult> moves = new ArrayList<>();
-
     private EvaluationResult alphabeta(Board b, int depth, Evaluation alpha, Evaluation beta, boolean isMax) {
         switch (b.determineGameState()) {
             case ONGOING -> {
@@ -193,9 +188,6 @@ public class Evaluator {
                         b.playMove(m);
                         EvaluationResult evaluationResult = alphabeta(b, depth - 1, alpha, beta, false);
                         b.undoLastMove();
-                        // if (depth == 3) {
-                        //    moves.add(new EvaluationResult(evaluationResult.eval(), m));
-                        //}
                         if (max == null || evaluationResult.eval().compareTo(max.eval()) > 0) {
                             max = new EvaluationResult(evaluationResult.eval(), m);
                         }
@@ -206,16 +198,13 @@ public class Evaluator {
                             alpha = max.eval();
                         }
                     }
-                    return new EvaluationResult(max.eval().getOneMoveLater(), max.move());
+                    return new EvaluationResult(max.eval().oneMoveEarlier(), max.move());
                 } else {
                     EvaluationResult min = null;
                     for (Move m : b.allPossibleMoves()) {
                         b.playMove(m);
                         EvaluationResult eval = alphabeta(b, depth - 1, alpha, beta, true);
                         b.undoLastMove();
-                        //if (depth == 3) {
-                        //    moves.add(new EvaluationResult(eval.eval(), m));
-                        //}
                         if (min == null || eval.eval().compareTo(min.eval()) < 0) {
                             min = new EvaluationResult(eval.eval(), m);
                         }
@@ -226,7 +215,7 @@ public class Evaluator {
                             beta = min.eval();
                         }
                     }
-                    return new EvaluationResult(min.eval().getOneMoveLater(), min.move());
+                    return new EvaluationResult(min.eval().oneMoveEarlier(), min.move());
                 }
             }
             case WHITE_WINS -> {

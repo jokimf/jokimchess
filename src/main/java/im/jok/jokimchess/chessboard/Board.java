@@ -255,9 +255,9 @@ public class Board {
             case QUEEN ->
                     generateInfiniteMoverMoves(moves, piece, x, y, new int[][]{left, right, up, down, upleft, upright, downleft, downright});
             // Normal mover
-            case KNIGHT -> { //TODO: Precalculate valid knight moves for every square?
-                generateSimpleMoverMoves(moves, piece, x, y, knightMoves);
-            }
+            case KNIGHT ->
+                    generateSimpleMoverMoves(moves, piece, x, y, knightMoves);
+
             case KING -> {
                 generateSimpleMoverMoves(moves, piece, x, y, kingMoves);
                 // Castling
@@ -452,7 +452,7 @@ public class Board {
         if (numberOfMoves == 0) {
             System.out.println("No possible moves left!");
         } else if (numberOfMoves == 1) {
-            return allPossibleMoves(true).get(0);
+            return allPossibleMoves().get(0);
         }
         return allPossibleMoves.get(r.nextInt(numberOfMoves - 1));
     }
@@ -468,6 +468,9 @@ public class Board {
             output.append("\n");
         }
         output.append("  abcdefgh");
+        output.append("\n " + "turnWhite=" + turnWhite + ", cstl=" + Arrays.toString(castlingOptions) +
+                ", enpass=" + Arrays.toString(enPassantSquare) + ", halfmove=" + halfmove +
+                ", fullmove=" + fullmove + ", piecesOnTheBoard=" + piecesOnTheBoard);
         return output.toString();
     }
 

@@ -4,30 +4,26 @@ import im.jok.jokimchess.chessboard.Board;
 import im.jok.jokimchess.chessboard.FENHelper;
 import im.jok.jokimchess.chessboard.Move;
 import im.jok.jokimchess.chessboard.MoveType;
-import im.jok.jokimchess.evaluation.EvaluationResult;
-import im.jok.jokimchess.evaluation.Evaluator;
 
-import java.util.Comparator;
 import java.util.HashMap;
 
 public class Main {
-
-
+    //r1b1k2r/1ppp2pp/1n2p3/p3Ppq1/1bPN4/2N5/PPQ1BPPP/R4RK1 b kq - -2 11
     // 1k6/8/1K1R4/8/8/8/8/8 w - - 0 1 Simple M1
     //TODO: Game takes args 'fen' and 'depth', gives move back
     public static void main(String[] args) {
-        new ChessAPI().startBackend();
-        //  Triggers server warning: 1r1qkb1r/ppp1nBpp/8/4PQP1/7P/2N5/PPPB4/2KR2NR b kq - -2 21
-        //r1b1k2r/1ppp2pp/1n2p3/p3Ppq1/1bPN4/2N5/PPQ1BPPP/R4RK1 b kq - -2 11
-        printmoves();
-    }
-
-    public static void printmoves() {
-        Board b = new FENHelper("2r1r3/5p1k/p4pb1/7p/1q1ppP1P/2P1P1QR/PP4P1/2K2B2 b - - 0 24").toBoard();
-        Evaluator e = new Evaluator();
-        e.determineBestEvaluationResult(b, 3);
-        e.moves.sort(Comparator.comparing(EvaluationResult::eval));
-        System.out.println(e.moves);
+        //new ChessAPI().startBackend();
+        Board b = new FENHelper("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8").toBoard();
+        b.playMove(b.getRandomMove());
+        System.out.println(b);
+        b.playMove(b.getRandomMove());
+        System.out.println(b);
+        b.playMove(b.getRandomMove());
+        System.out.println(b);
+        b.playMove(b.getRandomMove());
+        System.out.println(b);
+        b.playMove(b.getRandomMove());
+        System.out.println(b);
     }
 
     //TODO Movecount check
@@ -36,12 +32,12 @@ public class Main {
         Board b = f.toBoard();
         HashMap<MoveType, Integer> map = new HashMap<>();
         int moveCount = 0;
-        for (Move m : b.allPossibleMoves(true)) {
+        for (Move m : b.allPossibleMoves()) {
             b.playMove(m);
-            for (Move m2 : b.allPossibleMoves(true)) {
+            for (Move m2 : b.allPossibleMoves()) {
                 b.playMove(m2);
-                for (Move m3 : b.allPossibleMoves(true)) {
-                    moveCount += b.allPossibleMoves(true).size();
+                for (Move m3 : b.allPossibleMoves()) {
+                    moveCount += b.allPossibleMoves().size();
                     if (!map.containsKey(m3.moveType())) {
                         map.put(m3.moveType(), 1);
                     } else {
@@ -57,19 +53,11 @@ public class Main {
         System.out.println(map);
     }
 
-    // TODO King check fix
-    public static void kingCheckCheck() {
-        FENHelper f5 = new FENHelper("rnbqkbnr/2pppppp/5N2/8/pp1P4/8/PPP1PPPP/RNBQKB1R b KQkq - 1 5");
-        Board b5 = f5.toBoard();
-        System.out.println(b5.toString());
-        System.out.println(b5.isKingInCheck(true));
-    }
-
     // TODO King castle out of danger
     public void fixKingCastleOutOfDanger() {
         FENHelper f5 = new FENHelper("rnbQk2r/3p1pp1/2p1p2p/3Pn3/p7/R6P/1PP1PPP1/1N2KB1R b Kkq - 0 13");
         Board b5 = f5.toBoard();
         System.out.println(b5.toString());
-        System.out.println(b5.allPossibleMoves(true));
+        System.out.println(b5.allPossibleMoves());
     }
 }

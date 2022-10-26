@@ -20,7 +20,7 @@ public class Evaluation implements Comparable<Evaluation> {
         this.winner = winner;
     }
 
-    public Evaluation getOneMoveLater() {
+    public Evaluation oneMoveEarlier() {
         if (winner == PieceColor.WHITE) {
             return new Evaluation(1);
         }
@@ -56,10 +56,6 @@ public class Evaluation implements Comparable<Evaluation> {
             return Integer.compare(mateIn, other.mateIn);
         }
         return Float.compare(evalNumber, other.evalNumber);
-    }
-
-    public float getEvalNumber() {
-        return evalNumber;
     }
 
     public String toString() {

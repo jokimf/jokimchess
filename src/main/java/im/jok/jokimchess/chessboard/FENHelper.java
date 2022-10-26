@@ -63,7 +63,6 @@ public class FENHelper {
     }
 
     public String boardToFen(Board board) {
-        // Chessboard.Board part
         StringBuilder fen = new StringBuilder();
         for (int row = 0; row < 8; row++) {
             int countOfEmptySpaces = 0;
@@ -158,4 +157,6 @@ public class FENHelper {
     private boolean isWhitesTurn() {
         return fen.split(" ")[1].equals("w");
     }
+
+
 }

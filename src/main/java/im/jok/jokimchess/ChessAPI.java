@@ -6,8 +6,6 @@ import im.jok.jokimchess.evaluation.Evaluator;
 import io.javalin.Javalin;
 import io.javalin.plugin.bundled.CorsPluginConfig;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,25 +13,19 @@ import java.util.Map;
 
 public class ChessAPI {
     private static final Evaluator e = new Evaluator();
-    private static final int DEPTH = 3;
+    private static final int DEPTH = 4;
 
     public void startBackend() {
-        // http://localhost:7001/chess/eval?fen=1rb2rk1/p1qnbppp/B7/2ppP3/3P4/4QN2/1Pn2PPP/R1B2RK1 w - - 0 15
-        //Javalin app = Javalin.create(javalinConfig -> javalinConfig.plugins.enableCors(corsContainer -> corsContainer.add(CorsPluginConfig::anyHost))).start(7001);
-        Javalin app = Javalin.create().start(7001);
-        app.get("/", ctx -> {
-            ctx.status(200);
-            ctx.html(new String(Files.readAllBytes(Path.of("src/main/resources/index.html"))));
-        });
+        Javalin app = Javalin.create(javalinConfig -> javalinConfig.plugins.enableCors(corsContainer -> corsContainer.add(CorsPluginConfig::anyHost))).start(7001);
 
-        app.get("/moves", ctx -> {
+        app.get("/moves", ctx -> { // Get all possible moves for specific FEN
             String fen = ctx.queryParam("fen");
-            List<Move> moves = new FENHelper(fen).toBoard().allPossibleMoves(true);
+            List<Move> moves = new FENHelper(fen).toBoard().allPossibleMoves();
             ctx.status(200);
             ctx.json(moves);
         });
 
-        app.get("/newFen", ctx -> {
+        app.get("/newFen", ctx -> { // Return new FEN after playing move
             String fen = ctx.queryParam("fen"), moveType = ctx.queryParam("moveType"), pieceColor = ctx.queryParam("pieceColor"), pieceType = ctx.queryParam("pieceType");
             int startX = Integer.parseInt(ctx.queryParam("startX")), startY = Integer.parseInt(ctx.queryParam("startY"));
             int targetX = Integer.parseInt(ctx.queryParam("targetX")), targetY = Integer.parseInt(ctx.queryParam("targetY"));
@@ -46,11 +38,9 @@ public class ChessAPI {
             ctx.json(f.boardToFen(b));
         });
 
-        app.get("/bot", ctx -> {
+        app.get("/bot", ctx -> { // Get 'best' move for FEN
             Board b = new FENHelper(ctx.queryParam("fen")).toBoard();
             EvaluationResult bestEvaluationResult = e.determineBestEvaluationResult(b, DEPTH);
-            System.out.println(e.moves);
-            e.moves = new ArrayList<>();
             Move bestMove = bestEvaluationResult.move();
             b.playMove(bestMove);
 

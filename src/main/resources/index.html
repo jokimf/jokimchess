@@ -20,6 +20,7 @@
 </body>
 <script src="https://unpkg.com/konva@8/konva.min.js"></script>
 <script>
+    const local = window.location.href.startsWith("file://");
     const standardfen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
     const size = 800;
     const tileSize = size / 8;
@@ -86,9 +87,6 @@
 
     function drawPiece(pieceStr, positionX, positionY) {
         let imageObj = new Image();
-        imageObj.onload = function () {
-            piecesLayer.add(new Image())
-        }
         imageObj.src = pieceStr;
         let piece = new Konva.Image({
             image: imageObj,
@@ -153,7 +151,7 @@
         info.pieceType = info.pieceMoved.pieceType;
         delete info.pieceMoved;
         delete info.pieceTaken;
-        const responsePromise = fetch("/api/newFen?" + new URLSearchParams(info));
+        const responsePromise = fetch((local ? "http://localhost:7001/newFen?" : "api/newFen?") + new URLSearchParams(info));
         responsePromise.then(response => {
             response.text().then(backendFen => {
                 fen = backendFen;
@@ -164,7 +162,7 @@
     }
 
     function updateLegalMoves() {
-        const responsePromise = fetch("/api/moves?" + new URLSearchParams({fen: fen}));
+        const responsePromise = fetch((local ? "http://localhost:7001/moves?" : "api/moves?") + new URLSearchParams({fen: fen}));
         responsePromise.then(response => {
             response.json().then(json => {
                 legalMoves = json;
@@ -173,11 +171,9 @@
     }
 
     function playBotMove() {
-        const responsePromise = fetch("/api/bot?" + new URLSearchParams({fen: fen}));
-        console.log(fen);
+        const responsePromise = fetch((local ? "http://localhost:7001/bot?" : "api/bot?") + new URLSearchParams({fen: fen}));
         responsePromise.then(response => {
             response.json().then(backendFen => {
-                console.log(backendFen);
                 fen = backendFen['fen'];
                 let last_bot_move = backendFen['move'];
                 document.getElementById('eval').textContent = isNaN(parseFloat(backendFen['eval'])) ? backendFen['eval'].toString() : parseFloat(backendFen['eval']).toFixed(2);

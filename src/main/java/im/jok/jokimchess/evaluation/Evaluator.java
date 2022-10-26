@@ -200,6 +200,9 @@ public class Evaluator {
                             max = new EvaluationResult(evaluationResult.eval(), m);
                         }
                         if (max.eval().compareTo(beta) >= 0) {
+                            if (depth == 3) {
+                                System.out.println("XD");
+                            }
                             break;
                         }
                         if (alpha.compareTo(max.eval()) <= 0) {
@@ -220,6 +223,9 @@ public class Evaluator {
                             min = new EvaluationResult(eval.eval(), m);
                         }
                         if (min.eval().compareTo(alpha) <= 0) {
+                            if (depth == 3) {
+                                System.out.println("XD");
+                            }
                             break;
                         }
                         if (beta.compareTo(min.eval()) >= 0) {

@@ -14,6 +14,7 @@ import io.javalin.plugin.bundled.CorsPluginConfig;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class ChessAPI {
             Board b = new FENHelper(ctx.queryParam("fen")).toBoard();
             EvaluationResult bestEvaluationResult = e.determineBestEvaluationResult(b, DEPTH);
             System.out.println(e.moves);
+            e.moves = new ArrayList<>();
             Move bestMove = bestEvaluationResult.move();
             b.playMove(bestMove);
 

@@ -189,20 +189,17 @@ public class Evaluator {
 
                 if (isMax) {
                     EvaluationResult max = null;
-                    for (Move m : b.allPossibleMoves(true)) {
+                    for (Move m : b.allPossibleMoves()) {
                         b.playMove(m);
                         EvaluationResult evaluationResult = alphabeta(b, depth - 1, alpha, beta, false);
                         b.undoLastMove();
-                        if (depth == 3) {
-                            moves.add(new EvaluationResult(evaluationResult.eval(), m));
-                        }
+                        // if (depth == 3) {
+                        //    moves.add(new EvaluationResult(evaluationResult.eval(), m));
+                        //}
                         if (max == null || evaluationResult.eval().compareTo(max.eval()) > 0) {
                             max = new EvaluationResult(evaluationResult.eval(), m);
                         }
                         if (max.eval().compareTo(beta) >= 0) {
-                            if (depth == 3) {
-                                System.out.println("XD");
-                            }
                             break;
                         }
                         if (alpha.compareTo(max.eval()) <= 0) {
@@ -212,20 +209,17 @@ public class Evaluator {
                     return new EvaluationResult(max.eval().getOneMoveLater(), max.move());
                 } else {
                     EvaluationResult min = null;
-                    for (Move m : b.allPossibleMoves(true)) {
+                    for (Move m : b.allPossibleMoves()) {
                         b.playMove(m);
                         EvaluationResult eval = alphabeta(b, depth - 1, alpha, beta, true);
                         b.undoLastMove();
-                        if (depth == 3) {
-                            moves.add(new EvaluationResult(eval.eval(), m));
-                        }
+                        //if (depth == 3) {
+                        //    moves.add(new EvaluationResult(eval.eval(), m));
+                        //}
                         if (min == null || eval.eval().compareTo(min.eval()) < 0) {
                             min = new EvaluationResult(eval.eval(), m);
                         }
                         if (min.eval().compareTo(alpha) <= 0) {
-                            if (depth == 3) {
-                                System.out.println("XD");
-                            }
                             break;
                         }
                         if (beta.compareTo(min.eval()) >= 0) {

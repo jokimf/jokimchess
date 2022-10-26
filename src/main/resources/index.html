@@ -153,7 +153,7 @@
         info.pieceType = info.pieceMoved.pieceType;
         delete info.pieceMoved;
         delete info.pieceTaken;
-        const responsePromise = fetch("http://localhost:7001/chess/newFen?" + new URLSearchParams(info));
+        const responsePromise = fetch("/api/newFen?" + new URLSearchParams(info));
         responsePromise.then(response => {
             response.text().then(backendFen => {
                 fen = backendFen;
@@ -164,7 +164,7 @@
     }
 
     function updateLegalMoves() {
-        const responsePromise = fetch("http://localhost:7001/chess/moves?" + new URLSearchParams({fen: fen}));
+        const responsePromise = fetch("/api/moves?" + new URLSearchParams({fen: fen}));
         responsePromise.then(response => {
             response.json().then(json => {
                 legalMoves = json;
@@ -173,7 +173,7 @@
     }
 
     function playBotMove() {
-        const responsePromise = fetch("http://localhost:7001/chess/bot?" + new URLSearchParams({fen: fen}));
+        const responsePromise = fetch("/api/bot?" + new URLSearchParams({fen: fen}));
         console.log(fen);
         responsePromise.then(response => {
             response.json().then(backendFen => {

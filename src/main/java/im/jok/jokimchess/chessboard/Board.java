@@ -12,6 +12,9 @@ public class Board {
     private int halfmove, fullmove, halfmovesBeforeUndo;
     private final List<Piece> piecesOnTheBoard;
     private final Stack<Move> moveArchive;
+    private final int[] up = {-1, 0}, down = {1, 0}, left = {0, -1}, right = {0, 1}, upleft = {-1, -1}, upright = {-1, 1}, downleft = {1, -1}, downright = {1, 1};
+    private final int[][] knightMoves = {{1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}};
+    private final int[][] kingMoves = {{0, 1}, {0, -1}, {1, 0}, {1, 1}, {1, -1}, {-1, 0}, {-1, 1}, {-1, -1}};
 
     public Board(Piece[][] board, boolean turnWhite, boolean[] castlingOptions, int[] enPassantSquare, int halfmove, int fullmove, List<Piece> piecesOnTheBoard) {
         this.board = board;
@@ -29,7 +32,6 @@ public class Board {
         moveArchive.add(m);
         Piece piece = m.pieceMoved(), pieceTaken = m.pieceTaken();
         int targetX = m.targetX(), targetY = m.targetY(), startX = m.startX(), startY = m.startY();
-        boolean pieceIsWhite = piece.getPieceColor() == PieceColor.WHITE;
         // TODO: Add JUMPSTART moveType to set enPassantSquare
         // TODO: King loses castling rights on move
         // TODO: allPiecesOnTheBoard refresh on capture
@@ -224,73 +226,40 @@ public class Board {
         this.turnWhite = !turnWhite;
     }
 
-    public List<Move> allPossibleMoves(boolean checkTest) {
-        PieceColor activeColor = turnWhite ? PieceColor.WHITE : PieceColor.BLACK;
-        List<Move> moves = new ArrayList<>();
-        List<Piece> filtered = piecesOnTheBoard.stream().filter(p -> p.getPieceColor() == activeColor).toList();
 
-        for (Piece p : filtered) {
-            moves.addAll(availableMovesForPiece(p, checkTest));
+    public List<Move> allPossibleMoves() {
+        return allPossibleMoves(true);
+    }
+
+    public List<Move> allPossibleMoves(boolean checkIfKingIsAttackedNextTurn) {
+        List<Move> moves = new ArrayList<>();
+
+        // Iterate through active color pieces
+        for (Piece p : piecesOnTheBoard.stream().filter(p -> p.getPieceColor() == (turnWhite ? PieceColor.WHITE : PieceColor.BLACK)).toList()) {
+            moves.addAll(availableMovesForPiece(p, checkIfKingIsAttackedNextTurn));
         }
         return moves;
     }
 
-
-    private List<Move> availableMovesForPiece(Piece piece, boolean checkTest) {
+    private List<Move> availableMovesForPiece(Piece piece, boolean checkIfKingIsAttackedNextTurn) {
         List<Move> moves = new ArrayList<>();
         PieceType pieceTypeOnOldPos = piece.getPieceType();
-        PieceColor pieceColorOnOldPos = piece.getPieceColor();
         int x = piece.getX(), y = piece.getY();
 
-        // Is it the players turn?
-        if (turnWhite && pieceColorOnOldPos == PieceColor.BLACK || !turnWhite && pieceColorOnOldPos == PieceColor.WHITE) {
-            throw new IllegalArgumentException(turnWhite ? "Trying to do a BLACK move while WHITE is active" : "Trying to do a WHITE move while BLACK is active");
-        }
-
-        // Infinite mover
-        final int[] up = {-1, 0}, down = {1, 0}, left = {0, -1}, right = {0, 1}, upleft = {-1, -1}, upright = {-1, 1}, downleft = {1, -1}, downright = {1, 1};
         switch (pieceTypeOnOldPos) {
-            case BISHOP:
-                generateInfiniteMoverMoves(moves, piece, x, y, new int[][]{upleft, upright, downleft, downright});
-                break;
-            case ROOK:
-                generateInfiniteMoverMoves(moves, piece, x, y, new int[][]{left, right, up, down});
-                break;
-            case QUEEN:
-                generateInfiniteMoverMoves(moves, piece, x, y, new int[][]{left, right, up, down, upleft, upright, downleft, downright});
-                break;
+            // Infinite mover
+            case BISHOP ->
+                    generateInfiniteMoverMoves(moves, piece, x, y, new int[][]{upleft, upright, downleft, downright});
+            case ROOK ->
+                    generateInfiniteMoverMoves(moves, piece, x, y, new int[][]{left, right, up, down});
+            case QUEEN ->
+                    generateInfiniteMoverMoves(moves, piece, x, y, new int[][]{left, right, up, down, upleft, upright, downleft, downright});
             // Normal mover
-            case KNIGHT:
-                int[][] knightmoves = {new int[]{x + 1, y + 2}, new int[]{x + 2, y + 1}, new int[]{x + 2, y - 1}, new int[]{x + 1, y - 2}, new int[]{x - 1, y + 2},
-                        new int[]{x - 2, y + 1}, new int[]{x - 2, y - 1}, new int[]{x - 1, y - 2}};
-
-                for (int[] jump : knightmoves) {
-                    Piece targetPiece = getPieceAt(jump[0], jump[1]);
-                    if (targetPiece != null) {
-                        PieceColor targetPieceColor = targetPiece.getPieceColor();
-                        // Hits same color
-                        if (turnWhite && targetPieceColor == PieceColor.WHITE || !turnWhite && targetPieceColor == PieceColor.BLACK) {
-                            continue;
-                        }
-                    }
-                    moves.add(new Move(x, y, jump[0], jump[1], piece, targetPiece, NORMAL));
-                }
-                break;
-            case KING:
-                int[][] kingmoves = {new int[]{x, y + 1}, new int[]{x, y - 1}, new int[]{x + 1, y}, new int[]{x + 1, y + 1}, new int[]{x + 1, y - 1},
-                        new int[]{x - 1, y}, new int[]{x - 1, y + 1}, new int[]{x - 1, y - 1}};
-
-                for (int[] shuffle : kingmoves) {
-                    Piece targetPiece = getPieceAt(shuffle[0], shuffle[1]);
-                    if (targetPiece != null) {
-                        PieceColor targetPieceColor = targetPiece.getPieceColor();
-                        if (turnWhite && targetPieceColor == PieceColor.WHITE || !turnWhite && targetPieceColor == PieceColor.BLACK) {
-                            continue;
-                        }
-                    }
-                    moves.add(new Move(x, y, shuffle[0], shuffle[1], piece, targetPiece, NORMAL));
-                }
-
+            case KNIGHT -> { //TODO: Precalculate valid knight moves for every square?
+                generateSimpleMoverMoves(moves, piece, x, y, knightMoves);
+            }
+            case KING -> {
+                generateSimpleMoverMoves(moves, piece, x, y, kingMoves);
                 // Castling
                 // TODO: Hier fehlt noch, dass der King eventuell im Schach steht
                 boolean canCastle = piece.canCastle();
@@ -309,8 +278,8 @@ public class Board {
                         moves.add(new Move(x, y, 0, 2, piece, null, CASTLING_QUEENSIDE_B));
                     }
                 }
-                break;
-            case PAWN:
+            }
+            case PAWN -> { //TODO
                 if (turnWhite) {
                     // White
                     Piece inFront = getPieceAt(x - 1, y), inFrontLeft = getPieceAt(x - 1, y - 1), inFrontRight = getPieceAt(x - 1, y + 1);
@@ -367,26 +336,12 @@ public class Board {
                         moves.add(new Move(x, y, x + 1, y + 1, piece, getPieceAt(x, y + 1), ENPASSANT_B));
                     }
                 }
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown piece on " + FENHelper.positionToString(piece.getX(), piece.getY()));
-        }
-        return filterMoves(moves, checkTest);
-    }
-
-    private List<Move> filterMoves(List<Move> moves, boolean checkTest) {
-        // Filter moves by invalid position
-        List<Move> movesWithoutWrongCoordinates = new ArrayList<>(moves);
-        for (Move m : movesWithoutWrongCoordinates) {
-            int targetX = m.targetX(), targetY = m.targetY();
-            if (targetX > 7 || targetY > 7 || targetX < 0 || targetY < 0) {
-                moves.remove(m);
             }
         }
 
-        if (checkTest) {
+        if (checkIfKingIsAttackedNextTurn) {
             //TODO: Use iterators instead of copying lists
-            //TODO: Check detection is kinda broken
+            //TODO: Fix magic shit
             List<Move> iterMoves = new ArrayList<>(moves);
             for (Move m : iterMoves) {
                 playMove(m);
@@ -423,8 +378,7 @@ public class Board {
         if (halfmove >= 50) {
             return GameState.DRAW_BY_50_MOVE_RULE;
         }
-        var possibleMoves = allPossibleMoves(true);
-        if (possibleMoves.isEmpty()) {
+        if (allPossibleMoves().isEmpty()) {
             if (turnWhite) {
                 if (!isKingInCheck(true)) {
                     return GameState.STALEMATE;
@@ -448,31 +402,52 @@ public class Board {
     }
 
     private void generateInfiniteMoverMoves(List<Move> moves, Piece piece, int x, int y, int[][] directions) {
-        for (int[] direction : directions) { // Jede Direction durchgehen
-            for (int movelength = 1; movelength <= 7; movelength++) { // Jede Movelength durchgehen
-                int[] newPos = {x + direction[0] * movelength, y + direction[1] * movelength};
-                Piece pieceOnNewPos = getPieceAt(newPos[0], newPos[1]);
+        for (int[] direction : directions) {
+            for (int movelength = 1; movelength <= 7; movelength++) {
+                int newX = x + direction[0] * movelength, newY = y + direction[1] * movelength;
+                // Move leaves board
+                if (newX < 0 || newX > 7 || newY < 0 || newY > 7) {
+                    break;
+                }
+                Piece pieceOnNewPos = getPieceAt(newX, newY);
                 if (pieceOnNewPos != null) {
                     PieceColor pieceColorOnNewPos = pieceOnNewPos.getPieceColor();
-                    // Chessboard.Move trifft auf ein Chessboard.Piece der gleichen Farbe
+                    // Move hits same color
                     if (turnWhite && pieceColorOnNewPos == PieceColor.WHITE || !turnWhite && pieceColorOnNewPos == PieceColor.BLACK) {
                         break;
                     }
-                    // Chessboard.Move trifft auf ein Chessboard.Piece der anderen Farbe
+                    // Move hits different color
                     if (turnWhite && pieceColorOnNewPos == PieceColor.BLACK || !turnWhite && pieceColorOnNewPos == PieceColor.WHITE) {
-                        moves.add(new Move(x, y, x + direction[0] * movelength, y + direction[1] * movelength, piece, pieceOnNewPos, NORMAL));
+                        moves.add(new Move(x, y, newX, newY, piece, pieceOnNewPos, NORMAL));
                         break;
                     }
                 }
-                // Chessboard.Move trifft auf nichts
-                moves.add(new Move(x, y, x + direction[0] * movelength, y + direction[1] * movelength, piece, null, NORMAL));
+                // Move hits nothing
+                moves.add(new Move(x, y, newX, newY, piece, null, NORMAL));
             }
+        }
+    }
+
+    private void generateSimpleMoverMoves(List<Move> moves, Piece piece, int x, int y, int[][] targets) {
+        for (int[] target : targets) {
+            int targetX = target[0] + x, targetY = target[1] + y;
+            if (targetX < 0 || targetX > 7 || targetY < 0 || targetY > 7) {
+                continue;
+            }
+            Piece targetPiece = getPieceAt(targetX, targetY);
+            if (targetPiece != null) {
+                PieceColor targetPieceColor = targetPiece.getPieceColor();
+                if (turnWhite && targetPieceColor == PieceColor.WHITE || !turnWhite && targetPieceColor == PieceColor.BLACK) {
+                    continue;
+                }
+            }
+            moves.add(new Move(x, y, targetX, targetY, piece, targetPiece, NORMAL));
         }
     }
 
     public Move getRandomMove() {
         Random r = new Random();
-        List<Move> allPossibleMoves = allPossibleMoves(true);
+        List<Move> allPossibleMoves = allPossibleMoves();
         int numberOfMoves = allPossibleMoves.size();
         if (numberOfMoves == 0) {
             System.out.println("No possible moves left!");

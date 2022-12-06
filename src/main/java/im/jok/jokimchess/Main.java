@@ -12,18 +12,8 @@ public class Main {
     // 1k6/8/1K1R4/8/8/8/8/8 w - - 0 1 Simple M1
     //TODO: Game takes args 'fen' and 'depth', gives move back
     public static void main(String[] args) {
-        //new ChessAPI().startBackend();
-        Board b = new FENHelper("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8").toBoard();
-        b.playMove(b.getRandomMove());
-        System.out.println(b);
-        b.playMove(b.getRandomMove());
-        System.out.println(b);
-        b.playMove(b.getRandomMove());
-        System.out.println(b);
-        b.playMove(b.getRandomMove());
-        System.out.println(b);
-        b.playMove(b.getRandomMove());
-        System.out.println(b);
+        new ChessAPI().startBackend();
+        //Board b = new FENHelper("rnbq1k1r/pp1Pbppp/2p5/8/2B5/8/PPP1NnPP/RNBQK2R w KQ - 1 8").toBoard();
     }
 
     //TODO Movecount check
